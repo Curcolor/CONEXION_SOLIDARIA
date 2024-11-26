@@ -1,0 +1,43 @@
+.donation-form {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: var(--card-bg-color);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.donate-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1em;
+    background-color: var(--secondary-color);
+}
+
+.donate-btn:hover {
+    background-color: var(--hover-color);
+}
+
+@media (max-width: 768px) {
+    .donation-form {
+        padding: 20px;
+    }
+}
+
