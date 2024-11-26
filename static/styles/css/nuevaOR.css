@@ -1,0 +1,113 @@
+.form-container {
+    max-width: 800px;
+    margin: 30px auto;
+}
+
+.card {
+    background: var(--card-bg-color);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.card h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-color);
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+}
+
+.card h2 i {
+    color: var(--primary-color);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label i {
+    color: var(--primary-color);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(106, 17, 203, 0.2);
+    outline: none;
+}
+
+.form-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236a11cb'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 20px;
+    padding-right: 45px;
+}
+
+.btn-donar {
+    width: 100%;
+    background: linear-gradient(90deg, #8E2DE2 0%, #4A00E0 100%);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(142, 45, 226, 0.2);
+    text-transform: none;
+}
+
+.btn-donar i {
+    font-size: 1.2rem;
+}
+
+.btn-donar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(142, 45, 226, 0.4);
+}
+
+@media (max-width: 768px) {
+    .btn-donar {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}

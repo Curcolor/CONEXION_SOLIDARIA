@@ -25,49 +25,165 @@
     </nav>
     <div class="container">
         <div class="dashboard">
-            <div class="card">
-                <h3>Total Donaciones</h3>
-                <p id="totalDonations">$0</p>
-            </div>
-            <div class="card">
-                <h3>Proyectos Activos</h3>
+           
+            <a href="/templates/pages/html/proyectos.html" class="card clickable">
+                <h3>Proyecto Activos</h3>
                 <p id="activeProjects">0</p>
-            </div>
-            <div class="card">
+            </a>
+            <a href="/templates/pages/html/perfil.html#mis-organizaciones" class="card clickable">
                 <h3>Organizaciones Registradas</h3>
                 <p id="registeredOrgs">0</p>
+            </a>
+        </div>
+
+        <h2>Proyectos Destacados</h2>
+        <div class="featured-projects">
+            <div class="project-card">
+                <img src="/static/images/helpp.jpg" alt="Proyecto de Educación">
+                <div class="project-content">
+                    <h3 class="project-title">Educación para Todos</h3>
+                    <p class="organization-name"><i class="fas fa-building"></i> Fundación Educativa</p>
+                    <p class="project-description">Ayudando a niños de bajos recursos a acceder a educación de calidad</p>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span>Meta: $10,000</span>
+                            <span>Recaudado: $7,500</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 75%"></div>
+                        </div>
+                        <p class="progress-text">75% completado</p>
+                    </div>
+                    <div class="project-actions">
+                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
+                        
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="projects" id="projectList">
-            <!-- Proyectos se cargarán dinámicamente -->
-        </div>
+            <div class="project-card">
+                <img src="/static/images/rural.jpg" alt="Proyecto de Salud">
+                <div class="project-content">
+                    <h3 class="project-title">Salud para Comunidades</h3>
+                    <p class="organization-name"><i class="fas fa-building"></i> Cruz Roja Local</p>
+                    <p class="project-description">Llevando atención médica a comunidades rurales alejadas</p>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span>Meta: $15,000</span>
+                            <span>Recaudado: $9,000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 60%"></div>
+                        </div>
+                        <p class="progress-text">60% completado</p>
+                    </div>
+                    <div class="project-actions">
+                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
+                       
+                    </div>
+                </div>
+            </div>
 
-        <div class="card">
-            <h2>Registrar Nueva Organización</h2>
-            <form id="orgForm">
-                <div class="form-group">
-                    <label>Nombre de la Organización</label>
-                    <input type="text" required>
+            <div class="project-card">
+                <img src="/static/images/plantar.jpg" alt="Proyecto Ambiental">
+                <div class="project-content">
+                    <h3 class="project-title">Reforestación Urbana</h3>
+                    <p class="organization-name"><i class="fas fa-building"></i> EcoVida</p>
+                    <p class="project-description">Plantando árboles para mejorar la calidad del aire en la ciudad</p>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span>Meta: $8,000</span>
+                            <span>Recaudado: $6,400</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 80%"></div>
+                        </div>
+                        <p class="progress-text">80% completado</p>
+                    </div>
+                    <div class="project-actions">
+                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
+                       
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea required></textarea>
+            </div>
+
+            <div class="project-card">
+                <img src="/static/images/alimento.jpg" alt="Proyecto de Alimentación">
+                <div class="project-content">
+                    <h3 class="project-title">Banco de Alimentos</h3>
+                    <p class="organization-name"><i class="fas fa-building"></i> Alimentando Esperanzas</p>
+                    <p class="project-description">Distribución de alimentos a familias en situación vulnerable</p>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span>Meta: $12,000</span>
+                            <span>Recaudado: $3,600</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 30%"></div>
+                        </div>
+                        <p class="progress-text">30% completado</p>
+                    </div>
+                    <div class="project-actions">
+                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
+                       
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <select required>
-                        <option value="">Seleccione una categoría</option>
-                        <option value="educacion">Educación</option>
-                        <option value="salud">Salud</option>
-                        <option value="ambiente">Medio Ambiente</option>
-                        <option value="social">Desarrollo Social</option>
-                    </select>
+            </div>
+
+            <div class="project-card">
+                <img src="/static/images/deporte.jpg" alt="Proyecto Deportivo">
+                <div class="project-content">
+                    <h3 class="project-title">Deporte para Todos</h3>
+                    <p class="organization-name"><i class="fas fa-building"></i> Fundación Deportiva</p>
+                    <p class="project-description">Creando espacios deportivos en barrios vulnerables</p>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span>Meta: $20,000</span>
+                            <span>Recaudado: $18,000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 90%"></div>
+                        </div>
+                        <p class="progress-text">90% completado</p>
+                    </div>
+                    <div class="project-actions">
+                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
+                       
+                    </div>
                 </div>
-                <button type="submit" class="btn">Registrar Organización</button>
-            </form>
+            </div>
+
+            <div class="project-card">
+                <img src="/static/images/arte.jpg" alt="Proyecto Cultural">
+                <div class="project-content">
+                    <h3 class="project-title">Arte en tu Barrio</h3>
+                    <p class="organization-name"><i class="fas fa-building"></i> Cultura Viva</p>
+                    <p class="project-description">Talleres de arte y música para jóvenes en riesgo social</p>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span>Meta: $6,000</span>
+                            <span>Recaudado: $3,000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 50%"></div>
+                        </div>
+                        <p class="progress-text">50% completado</p>
+                    </div>
+                    <div class="project-actions">
+                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
+                        
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <footer>
+        <p>&copy; 2024 Conexión Solidaria. Todos los derechos reservados.</p>
+    </footer>
+
     <script src="/static/scripts/ejemplo.js"></script>
+</body>
+</html>
+    
     

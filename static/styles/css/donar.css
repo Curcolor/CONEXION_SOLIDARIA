@@ -26,18 +26,36 @@
 
 .donate-btn {
     width: 100%;
-    padding: 15px;
-    font-size: 1.1em;
-    background-color: var(--secondary-color);
+    background: linear-gradient(90deg, #8E2DE2 0%, #4A00E0 100%);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(142, 45, 226, 0.2);
+    text-transform: none;
 }
 
 .donate-btn:hover {
-    background-color: var(--hover-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(142, 45, 226, 0.4);
 }
 
 @media (max-width: 768px) {
     .donation-form {
         padding: 20px;
+    }
+    
+    .donate-btn {
+        padding: 12px 20px;
+        font-size: 1rem;
     }
 }
 

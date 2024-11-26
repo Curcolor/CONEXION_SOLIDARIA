@@ -29,32 +29,17 @@
         <h2>Organizaciones Registradas</h2>
         <div id="orgList" class="org-grid">
             <!-- Organizaciones se cargarán dinámicamente -->
+            <div id="organizaciones-container">
+                <!-- Aquí se cargarán las organizaciones -->
+            </div>
+            <a href="/templates/pages/html/nuevaOR.html" class="btn-crear">
+                <i class="fas fa-plus"></i>
+                Crear organización
+            </a>
+            
         </div>
 
-        <div class="card new-org-form">
-            <h2>Registrar Nueva Organización</h2>
-            <form id="orgForm">
-                <div class="form-group">
-                    <label for="org-name">Nombre de la Organización</label>
-                    <input type="text" id="org-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="org-description">Descripción</label>
-                    <textarea id="org-description" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="org-category">Categoría</label>
-                    <select id="org-category" required>
-                        <option value="">Seleccione una categoría</option>
-                        <option value="educacion">Educación</option>
-                        <option value="salud">Salud</option>
-                        <option value="ambiente">Medio Ambiente</option>
-                        <option value="social">Desarrollo Social</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn">Registrar Organización</button>
-            </form>
-        </div>
+        
     </main>
 
     <footer>

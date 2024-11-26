@@ -27,8 +27,17 @@
 
     <main class="container">
         <div class="profile-header">
-            <img src="/static/images/default-avatar.png" alt="Foto de perfil" class="profile-picture">
+            <img src="/static/images/perfilimg.jpg" alt="Foto de perfil" class="profile-picture">
             <h2 id="userName">Nombre del Usuario</h2>
+            <div class="login-link">
+                <a href="/templates/pages/html/login.html">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </a>
+                <span class="separator">|</span>
+                <a href="/templates/pages/html/registro.html">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </a>
+            </div>
         </div>
 
         <div class="profile-stats">
@@ -44,8 +53,8 @@
             </div>
         </div>
 
-        <div class="donation-history">
-            <h3>Historial de Donaciones</h3>
+        <div class="donation-history card fadeInUp">
+            <h3><i class="fas fa-history"></i> Historial de Donaciones</h3>
             <table id="donationTable">
                 <thead>
                     <tr>
@@ -58,6 +67,23 @@
                     <!-- El historial de donaciones se cargará dinámicamente -->
                 </tbody>
             </table>
+        </div>
+
+        <div class="organizations-section card fadeInUp">
+            <h3><i class="fas fa-building"></i> Mis Organizaciones</h3>
+            <div class="organizations-grid">
+                <div class="organization-card">
+                    <img src="/static/images/ayuda.jpg" alt="Organización">
+                    <h4>Educacion en sincelejo</h4>
+                    <p class="org-category"><i class="fas fa-tag"></i> Educación</p>
+                    <div class="org-stats">
+                        <span><i class="fas fa-hand-holding-heart"></i> 12 Donaciones</span>
+                        <span><i class="fas fa-users"></i> 45 Miembros</span>
+                    </div>
+                    
+                </div>
+                <!-- Puedes agregar más organization-card aquí -->
+            </div>
         </div>
     </main>
 
