@@ -1,27 +1,27 @@
+/* Contenedor principal del formulario */
 .form-container {
     max-width: 800px;
-    margin: 30px auto;
+    margin: 30px auto;  /* Centrado horizontal con margen superior e inferior */
 }
 
+/* Estilo de la tarjeta principal */
 .card {
-    background: var(--card-bg-color);
-    border-radius: 15px;
+    background: var(--card-bg-color);  /* Color de fondo usando variable CSS */
+    border-radius: 15px;  /* Bordes redondeados */
     padding: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* Sombra suave */
     margin-bottom: 30px;
 }
 
+/* Estilo para los encabezados h2 dentro de la tarjeta */
 .card h2 {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 10px;  /* Espacio entre elementos */
     color: var(--text-color);
     margin-bottom: 25px;
     font-size: 1.8rem;
-}
-
-.card h2 i {
-    color: var(--primary-color);
+    padding-left: 50px;  /* Padding izquierdo para acomodar el botón de regresar */
 }
 
 .form-group {
@@ -77,12 +77,12 @@
     padding-right: 45px;
 }
 
-.btn-donar {
+.btn-registrar {
     width: 100%;
     background: linear-gradient(90deg, #8E2DE2 0%, #4A00E0 100%);
     color: white;
     padding: 15px 30px;
-    border-radius: 4px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
     font-weight: 600;
@@ -96,18 +96,49 @@
     text-transform: none;
 }
 
-.btn-donar i {
-    font-size: 1.2rem;
-}
 
-.btn-donar:hover {
+
+.btn-registrar:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(142, 45, 226, 0.4);
 }
 
+/* Estilos responsivos para pantallas móviles y tablets */
 @media (max-width: 768px) {
+    /* Ajusta el tamaño y padding del botón de donar para pantallas pequeñas */
     .btn-donar {
-        padding: 12px 20px;
-        font-size: 1rem;
+        padding: 12px 20px; /* Reduce el padding horizontal y vertical */
+        font-size: 1rem;   /* Reduce el tamaño de fuente a 16px */
     }
+}
+
+.card-header {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.btn-regresar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+   
+    color: white;
+    text-decoration: none;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+.card h2 {
+    padding-left: 70px;
+    margin-left: 20px;
+}
+
+
+
+.card h2 {
+    padding-left: 50px;
 }
