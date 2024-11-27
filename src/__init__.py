@@ -7,11 +7,13 @@ import sqlite3
  # Importar la clase BaseDatos
 
  # Configuración de la base de datos SQLite
-DATABASE = 'donaciones.sqlite'
+app = Flask(__name__, static_url_path="/src/static/", static_folder="static")
+CORS(app)  # Permitir peticiones cross-origin
+db = BaseDatos()  # Crear instancia de la base de datos
 
 # Función para obtener la conexión a la base de datos
 def get_db():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(db.ruta_db)
     conn.row_factory = sqlite3.Row  # Permite acceder a las columnas por nombre
     return conn
 
@@ -75,9 +77,6 @@ def check_database_connection():
         if 'conn' in locals():
             conn.close()
 
-app = Flask(__name__, static_url_path="/src/static/", static_folder="static")
-CORS(app)  # Permitir peticiones cross-origin
-db = BaseDatos()  # Crear instancia de la base de datos
 
 from src.routes import *
 
