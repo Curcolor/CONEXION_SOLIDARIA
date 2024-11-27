@@ -109,26 +109,14 @@ class BaseDatos:
             return None
 
     # Ejemplo de insertar usuario
-    def crear_usuario(
-        self, nombre_completo, dni, email, telefono, fecha_nacimiento, contraseña
-    ):
+    def crear_usuario(self, nombre_completo, dni, email, telefono, fecha_nacimiento, contraseña):
         try:
             with self.get_conexion() as conexion:
                 cursor = conexion.cursor()
-                cursor.execute(
-                    """
+                cursor.execute("""
                     INSERT INTO usuarios (nombre_completo, dni, email, telefono, fecha_nacimiento, contraseña)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """,
-                    (
-                        nombre_completo,
-                        dni,
-                        email,
-                        telefono,
-                        fecha_nacimiento,
-                        contraseña,
-                    ),
-                )
+                """, (nombre_completo, dni, email, telefono, fecha_nacimiento, contraseña))
                 return cursor.lastrowid
         except sqlite3.Error as e:
             print(f"Error al crear usuario: {e}")
@@ -270,38 +258,3 @@ class BaseDatos:
         except sqlite3.Error as e:
             print(f"Error al actualizar imagen de solicitud: {e}")
             return False
-
-
-# Ejemplo de uso
-if __name__ == "__main__":
-    db = BaseDatos()
-
-    # Ejemplo de crear un usuario
-    usuario_id = db.crear_usuario(
-        nombre_completo="Juan Pérez",
-        dni="12345678",
-        email="juan@ejemplo.com",
-        telefono="123456789",
-        fecha_nacimiento="1990-01-01",
-        contraseña="contraseña123",
-    )
-
-    if usuario_id:
-        print(f"Usuario creado con ID: {usuario_id}")
-
-        # Crear una organización para el usuario
-        org_id = db.crear_organizacion(
-            nombre="ONG Ejemplo",
-            descripcion="Una organización de ejemplo",
-            categoria="Social",
-            imagen_url=None,  # Inicialmente sin imagen
-            usuario_id=usuario_id,
-        )
-
-        if org_id:
-            print(f"Organización creada con ID: {org_id}")
-
-            # Actualizar la imagen de la organización
-            imagen_url = "/static/uploads/1234567890_imagen.jpg"
-            if db.actualizar_imagen_organizacion(org_id, imagen_url):
-                print(f"Imagen actualizada: {imagen_url}")
