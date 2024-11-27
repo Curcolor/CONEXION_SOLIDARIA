@@ -1,42 +1,49 @@
-// Objeto con los tipos de ayuda disponibles por organización
-const tiposAyuda = {
-    'organizacion_salud': ['Medicamentos', 'Equipos médicos', 'Atención médica', 'Otros'],
-    'organizacion_educativa': ['Útiles escolares', 'Becas', 'Material didáctico', 'Otros'],
-    'organizacion_alimentaria': ['Alimentos no perecederos', 'Comedores comunitarios', 'Otros'],
-    'organizacion_vivienda': ['Materiales de construcción', 'Mejoras de vivienda', 'Otros']
+// Objeto con las organizaciones disponibles por tipo de ayuda
+const organizacionesPorTipo = {
+    'salud': [
+        { id: 'org1', nombre: 'Hospital San Juan' },
+        { id: 'org2', nombre: 'Clínica Bienestar' }
+        // Aquí se pueden agregar más organizaciones de salud
+    ],
+    'alimentaria': [
+        { id: 'org3', nombre: 'Banco de Alimentos' },
+        { id: 'org4', nombre: 'Comedores Solidarios' }
+        // Aquí se pueden agregar más organizaciones alimentarias
+    ],
+    'educativa': [
+        { id: 'org5', nombre: 'Fundación Educativa' },
+        { id: 'org6', nombre: 'Escuelas Unidas' }
+        // Aquí se pueden agregar más organizaciones educativas
+    ],
+    'vivienda': [
+        { id: 'org7', nombre: 'Construyendo Hogares' },
+        { id: 'org8', nombre: 'Techo para Todos' }
+        // Aquí se pueden agregar más organizaciones de vivienda
+    ]
 };
 
-// Montos sugeridos por tipo de ayuda (en pesos mexicanos)
-const montosSugeridos = {
-    'Medicamentos': [100, 200, 500, 1000],
-    'Equipos médicos': [1000, 2000, 5000, 10000],
-    'Atención médica': [300, 500, 1000, 2000],
-    'Útiles escolares': [200, 500, 1000, 2000],
-    'Becas': [1000, 2000, 5000, 10000],
-    'Material didáctico': [300, 500, 1000, 2000],
-    'Alimentos no perecederos': [200, 500, 1000, 2000],
-    'Comedores comunitarios': [500, 1000, 2000, 5000],
-    'Materiales de construcción': [1000, 2000, 5000, 10000],
-    'Mejoras de vivienda': [2000, 5000, 10000, 20000],
-    'Otros': [100, 200, 500, 1000]
-};
-
-// Función para actualizar el select de tipos de ayuda
-function actualizarTiposAyuda() {
-    const organizacionSelect = document.getElementById('organizacion');
+// Función para actualizar las organizaciones según el tipo de ayuda seleccionado
+function actualizarOrganizaciones() {
     const tipoAyudaSelect = document.getElementById('tipo_ayuda');
-    const organizacion = organizacionSelect.value;
+    const organizacionSelect = document.getElementById('organizacion');
+    const tipoAyuda = tipoAyudaSelect.value;
     
     // Limpiar opciones actuales
-    tipoAyudaSelect.innerHTML = '<option value="">Seleccione el tipo de ayuda</option>';
+    organizacionSelect.innerHTML = '<option value="">Seleccione una organización</option>';
     
-    // Si hay una organización seleccionada, agregar sus tipos de ayuda
-    if (organizacion && tiposAyuda[organizacion]) {
-        tiposAyuda[organizacion].forEach(tipo => {
+    // Si hay un tipo de ayuda seleccionado, mostrar las organizaciones correspondientes
+    if (tipoAyuda && organizacionesPorTipo[tipoAyuda]) {
+        organizacionesPorTipo[tipoAyuda].forEach(org => {
             const option = document.createElement('option');
-            option.value = tipo;
-            option.textContent = tipo;
-            tipoAyudaSelect.appendChild(option);
+            option.value = org.id;
+            option.textContent = org.nombre;
+            organizacionSelect.appendChild(option);
         });
     }
 }
+
+// Agregar event listener cuando se carga el documento
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoAyudaSelect = document.getElementById('tipo_ayuda');
+    tipoAyudaSelect.addEventListener('change', actualizarOrganizaciones);
+});
