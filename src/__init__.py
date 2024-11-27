@@ -169,7 +169,7 @@ def create_app():
         except Exception as e:
             print(f"Error en el registro: {str(e)}")  # Para debugging
             return jsonify({'error': str(e)}), 500
-
+    
     return app
 
 # Puedes llamar a la función durante la inicialización de la app

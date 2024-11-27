@@ -111,3 +111,139 @@
 .btn-crear:hover::before {
     opacity: 1;
 }
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-eliminar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-eliminar:hover {
+    background-color: #c82333;
+}
+
+.controles {
+    padding: 1rem 2rem;
+}
+
+#organizacionesTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#organizacionesTable th,
+#organizacionesTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#organizacionesTable th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.organizacion-row:hover {
+    background-color: #f8f9fa;
+}
+
+.org-imagen img {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.org-nombre {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.org-descripcion {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.org-categoria {
+    color: #666;
+}
+
+.org-creador {
+    color: #666;
+}
+
+.org-fecha {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.org-acciones {
+    text-align: center;
+}
+
+.btn-eliminar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-eliminar:hover {
+    background-color: #c82333;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    #organizacionesTable {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .org-descripcion {
+        max-width: 150px;
+    }
+}
+
+/* Animación de entrada */
+.organizacion-row {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+

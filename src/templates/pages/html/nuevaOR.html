@@ -37,16 +37,18 @@
                 </div>
                 <form id="orgForm">
                     <div class="form-group">
-                        <label><i class="fas fa-signature"></i> Nombre de la Organización</label>
-                        <input type="text" required placeholder="Ingrese el nombre de la organización">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" class="form-control" name="nombre" required>
                     </div>
+                    
                     <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Descripción</label>
-                        <textarea required placeholder="Describa el propósito y objetivos de la organización"></textarea>
+                        <label for="descripcion">Descripción:</label>
+                        <textarea class="form-control" name="descripcion"></textarea>
                     </div>
+                    
                     <div class="form-group">
-                        <label><i class="fas fa-tags"></i> Categoría</label>
-                        <select required>
+                        <label for="categoria">Categoría:</label>
+                        <select class="form-control" name="categoria">
                             <option value="">Seleccione una categoría</option>
                             <option value="educacion">Educación</option>
                             <option value="salud">Salud</option>
@@ -54,10 +56,15 @@
                             <option value="social">Desarrollo Social</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-registrar">
-                        Registrar Organización
-                    </button>
+                    
+                    <div class="form-group">
+                        <label for="imagen">Imagen:</label>
+                        <input type="file" class="form-control" name="imagen" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
+                <div id="mensaje-respuesta"></div>
             </div>
         </div>
     </div>
