@@ -75,13 +75,7 @@ def check_database_connection():
         if 'conn' in locals():
             conn.close()
 
-app = Flask(__name__,static_url_path='/src/static/', static_folder='static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///donaciones.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)  # Crear instancia de SQLAlchemy
-app = Flask(
-        __name__, static_url_path="/src/static/", static_folder="static"
-    )
+app = Flask(__name__, static_url_path="/src/static/", static_folder="static")
 CORS(app)  # Permitir peticiones cross-origin
 db = BaseDatos()  # Crear instancia de la base de datos
 
