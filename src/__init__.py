@@ -1,15 +1,22 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
-from .Models.modelo_db import BaseDatos  # Importar la clase BaseDatos
+from .Models.modelo_db import BaseDatos 
+
+ # Importar la clase BaseDatos
+
+app = Flask(
+        __name__, static_url_path="/src/static/", static_folder="static"
+    )
+CORS(app)  # Permitir peticiones cross-origin
+db = BaseDatos()  # Crear instancia de la base de datos
+
+from src.routes import *
 
 def create_app():
-    app = Flask(__name__)
-    CORS(app)  # Permitir peticiones cross-origin
-    db = BaseDatos()  # Crear instancia de la base de datos
 
     # Configuración del servidor
-    UPLOAD_FOLDER = 'app/static/uploads/'  # Cambiamos la ruta para mejor organización
+    UPLOAD_FOLDER = 'src/static/uploads/'  # Cambiamos la ruta para mejor organización
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -58,5 +65,5 @@ def create_app():
             }), 200
         else:
             return jsonify({"error": "Extensión no permitida"}), 400
-
     return app
+
