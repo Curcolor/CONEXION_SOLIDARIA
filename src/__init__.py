@@ -139,6 +139,45 @@ def create_app():
             }), 200
         else:
             return jsonify({"error": "Extensión no permitida"}), 400
+        
+
+    @app.route('/api/registro', methods=['POST'])
+    def registro_usuario():
+        try:
+            datos = request.get_json()
+            
+            # Verificar que todos los campos necesarios estén presentes
+            campos_requeridos = ['nombre_completo', 'dni', 'email', 'telefono', 'fecha_nacimiento', 'contraseña']
+            for campo in campos_requeridos:
+                if campo not in datos:
+                    return jsonify({'error': f'Falta el campo {campo}'}), 400
+
+            # Crear instancia de la base de datos
+            db = BaseDatos()
+            
+            # Llamar al método crear_usuario con todos los parámetros requeridos
+            usuario_id = db.crear_usuario(
+                nombre_completo=datos['nombre_completo'],
+                dni=datos['dni'],
+                email=datos['email'],
+                telefono=datos['telefono'],
+                fecha_nacimiento=datos['fecha_nacimiento'],
+                contraseña=datos['contraseña']
+            )
+
+            if usuario_id:
+                return jsonify({
+                    'success': True,
+                    'mensaje': 'Usuario registrado exitosamente',
+                    'usuario_id': usuario_id
+                })
+            else:
+                return jsonify({'error': 'Error al crear el usuario'}), 400
+
+        except Exception as e:
+            print(f"Error en el registro: {str(e)}")  # Para debugging
+            return jsonify({'error': str(e)}), 500
+
     return app
 
 # Puedes llamar a la función durante la inicialización de la app

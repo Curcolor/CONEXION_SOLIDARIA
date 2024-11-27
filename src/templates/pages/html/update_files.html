@@ -37,7 +37,90 @@
         <img id="imagePreview" src="" alt="" style="display: none;">
     </div>
 
+
+    <form id="registroForm">
+        <div class="form-group">
+            <label for="nombre_completo">Nombre Completo:</label>
+            <input type="text" id="nombre_completo" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="dni">DNI:</label>
+            <input type="text" id="dni" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono">
+        </div>
+        
+        <div class="form-group">
+            <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+            <input type="date" id="fecha_nacimiento">
+        </div>
+        
+        <div class="form-group">
+            <label for="contraseña">Contraseña:</label>
+            <input type="password" id="contraseña" required>
+        </div>
+
+        <button type="submit">Registrar</button>
+    </form>
+
+    <div id="resultado"></div>
+
     <script>
+        // Registro de usuario ############################################################################################ 
+
+        ddocument.getElementById('registroForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Recoger todos los datos del formulario
+    const userData = {
+        nombre_completo: document.getElementById('nombre_completo').value,
+        dni: document.getElementById('dni').value,
+        email: document.getElementById('email').value,
+        telefono: document.getElementById('telefono').value || null,  // Si es opcional
+        fecha_nacimiento: document.getElementById('fecha_nacimiento').value || null,  // Si es opcional
+        contraseña: document.getElementById('contraseña').value
+    };
+
+    // Para debugging
+    console.log('Datos a enviar:', userData);
+
+    try {
+        const response = await fetch('/api/registro', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            document.getElementById('resultado').innerHTML = 
+                `<p class="success">Usuario registrado exitosamente!</p>`;
+            document.getElementById('registroForm').reset();
+        } else {
+            document.getElementById('resultado').innerHTML = 
+                `<p class="error">Error: ${data.error}</p>`;
+            }
+        } catch (error) {
+            document.getElementById('resultado').innerHTML = 
+                `<p class="error">Error de conexión: ${error.message}</p>`;
+        console.error('Error completo:', error);
+            }
+        });
+
+        // Subida de imagen ############################################################################################
+
         const form = document.getElementById('uploadForm');
         const result = document.getElementById('result');
         const imagePreview = document.getElementById('imagePreview');
