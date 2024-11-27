@@ -11,92 +11,92 @@ class BaseDatos:
                 cursor = conexion.cursor()
                 cursor.executescript("""
                     PRAGMA foreign_keys = ON;
+                                     
+                    -- -----------------------------------------------------
+                    -- Table usuarios
+                    -- -----------------------------------------------------
+                    CREATE TABLE IF NOT EXISTS usuarios (
+                        id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nombre_completo TEXT NOT NULL,
+                        dni TEXT NOT NULL UNIQUE,
+                        email TEXT NOT NULL UNIQUE,
+                        telefono TEXT DEFAULT NULL,
+                        fecha_nacimiento DATE DEFAULT NULL,
+                        contraseña TEXT NOT NULL,
+                        fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
 
--- -----------------------------------------------------
--- Table usuarios
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS usuarios (
-  id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
-  nombre_completo TEXT NOT NULL,
-  dni TEXT NOT NULL UNIQUE,
-  email TEXT NOT NULL UNIQUE,
-  telefono TEXT DEFAULT NULL,
-  fecha_nacimiento DATE DEFAULT NULL,
-  contraseña TEXT NOT NULL,
-  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+                    -- -----------------------------------------------------
+                    -- Table organizaciones
+                    -- -----------------------------------------------------
+                    CREATE TABLE IF NOT EXISTS organizaciones (
+                        id_organizacion INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nombre TEXT NOT NULL,
+                        descripcion TEXT DEFAULT NULL,
+                        categoria TEXT DEFAULT NULL,
+                        imagen_url TEXT DEFAULT NULL,
+                        fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        usuarios_id_usuario INTEGER NOT NULL,
+                        FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION
+                    );
 
--- -----------------------------------------------------
--- Table organizaciones
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS organizaciones (
-  id_organizacion INTEGER PRIMARY KEY AUTOINCREMENT,
-  nombre TEXT NOT NULL,
-  descripcion TEXT DEFAULT NULL,
-  categoria TEXT DEFAULT NULL,
-  imagen_url TEXT DEFAULT NULL,
-  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  usuarios_id_usuario INTEGER NOT NULL,
-  FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION
-);
+                    -- -----------------------------------------------------
+                    -- Table proyectos
+                    -- -----------------------------------------------------
+                    CREATE TABLE IF NOT EXISTS proyectos (
+                        id_proyecto INTEGER PRIMARY KEY AUTOINCREMENT,
+                        titulo TEXT NOT NULL,
+                        descripcion TEXT DEFAULT NULL,
+                        meta_financiera REAL DEFAULT NULL,
+                        monto_recaudado REAL DEFAULT 0.00,
+                        categoria TEXT DEFAULT NULL,
+                        imagen_url TEXT DEFAULT NULL,
+                        fecha_inicio DATE DEFAULT NULL,
+                        fecha_fin DATE DEFAULT NULL,
+                        estado TEXT DEFAULT NULL,
+                        organizaciones_id_organizacion INTEGER NOT NULL,
+                        FOREIGN KEY (organizaciones_id_organizacion) REFERENCES organizaciones (id_organizacion) ON DELETE NO ACTION ON UPDATE NO ACTION
+                    );
 
--- -----------------------------------------------------
--- Table proyectos
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS proyectos (
-  id_proyecto INTEGER PRIMARY KEY AUTOINCREMENT,
-  titulo TEXT NOT NULL,
-  descripcion TEXT DEFAULT NULL,
-  meta_financiera REAL DEFAULT NULL,
-  monto_recaudado REAL DEFAULT 0.00,
-  categoria TEXT DEFAULT NULL,
-  imagen_url TEXT DEFAULT NULL,
-  fecha_inicio DATE DEFAULT NULL,
-  fecha_fin DATE DEFAULT NULL,
-  estado TEXT DEFAULT NULL,
-  organizaciones_id_organizacion INTEGER NOT NULL,
-  FOREIGN KEY (organizaciones_id_organizacion) REFERENCES organizaciones (id_organizacion) ON DELETE NO ACTION ON UPDATE NO ACTION
-);
+                    -- -----------------------------------------------------
+                    -- Table donaciones
+                    -- -----------------------------------------------------
+                    CREATE TABLE IF NOT EXISTS donaciones (
+                        id_donacion INTEGER PRIMARY KEY AUTOINCREMENT,
+                        monto REAL NOT NULL,
+                        fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        tipo_ayuda TEXT DEFAULT NULL,
+                        usuarios_id_usuario INTEGER NOT NULL,
+                        proyectos_id_proyecto INTEGER NOT NULL,
+                        FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                        FOREIGN KEY (proyectos_id_proyecto) REFERENCES proyectos (id_proyecto) ON DELETE NO ACTION ON UPDATE NO ACTION
+                    );
 
--- -----------------------------------------------------
--- Table donaciones
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS donaciones (
-  id_donacion INTEGER PRIMARY KEY AUTOINCREMENT,
-  monto REAL NOT NULL,
-  fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  tipo_ayuda TEXT DEFAULT NULL,
-  usuarios_id_usuario INTEGER NOT NULL,
-  proyectos_id_proyecto INTEGER NOT NULL,
-  FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  FOREIGN KEY (proyectos_id_proyecto) REFERENCES proyectos (id_proyecto) ON DELETE NO ACTION ON UPDATE NO ACTION
-);
+                    -- -----------------------------------------------------
+                    -- Table intereses_usuario
+                    -- -----------------------------------------------------
+                    CREATE TABLE IF NOT EXISTS intereses_usuario (
+                        id_interes INTEGER PRIMARY KEY AUTOINCREMENT,
+                        categoria TEXT DEFAULT NULL UNIQUE,
+                        usuarios_id_usuario INTEGER NOT NULL,
+                        FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION
+                    );
 
--- -----------------------------------------------------
--- Table intereses_usuario
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS intereses_usuario (
-  id_interes INTEGER PRIMARY KEY AUTOINCREMENT,
-  categoria TEXT DEFAULT NULL UNIQUE,
-  usuarios_id_usuario INTEGER NOT NULL,
-  FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION
-);
-
--- -----------------------------------------------------
--- Table solicitudes_ayuda
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS solicitudes_ayuda (
-  id_solicitud INTEGER PRIMARY KEY AUTOINCREMENT,
-  titulo TEXT NOT NULL,
-  descripcion TEXT DEFAULT NULL,
-  meta_financiera REAL DEFAULT NULL,
-  imagen_url TEXT DEFAULT NULL,
-  informacion_contacto TEXT DEFAULT NULL,
-  estado TEXT DEFAULT NULL,
-  fecha_solicitud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  usuarios_id_usuario INTEGER NOT NULL,
-  FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION
-);
+                    -- -----------------------------------------------------
+                    -- Table solicitudes_ayuda
+                    -- -----------------------------------------------------
+                    CREATE TABLE IF NOT EXISTS solicitudes_ayuda (
+                        id_solicitud INTEGER PRIMARY KEY AUTOINCREMENT,
+                        titulo TEXT NOT NULL,
+                        descripcion TEXT DEFAULT NULL,
+                        meta_financiera REAL DEFAULT NULL,
+                        imagen_url TEXT DEFAULT NULL,
+                        informacion_contacto TEXT DEFAULT NULL,
+                        estado TEXT DEFAULT NULL,
+                        fecha_solicitud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        usuarios_id_usuario INTEGER NOT NULL,
+                        FOREIGN KEY (usuarios_id_usuario) REFERENCES usuarios (id_usuario) ON DELETE NO ACTION ON UPDATE NO ACTION
+                    );
                 """)
         except sqlite3.Error as e:
             print(f"Error al inicializar la base de datos: {e}")
