@@ -38,3 +38,7 @@ def nuevaOR():
 def organizaciones():
     return render_template('pages/html/organizaciones.html')
 
+@app.route('/src/templates/pages/html/update_files.html')
+def update_files():
+    return render_template('pages/html/update_files.html')
+
