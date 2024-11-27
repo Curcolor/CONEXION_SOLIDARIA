@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subida de Imágenes</title>
+    <style>
+        .preview {
+            max-width: 300px;
+            margin-top: 20px;
+        }
+        #imagePreview {
+            max-width: 100%;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Subir una imagen</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="file">Selecciona una imagen (jpg, png, gif):</label>
+        <input type="file" id="file" name="file" accept="image/*" required>
+        <input type="hidden" name="organizacion_id" value="1">
+        <br><br>
+        <button type="submit">Subir</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <div class="preview">
+        <h3>Vista previa:</h3>
+        <img id="imagePreview" src="" alt="" style="display: none;">
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const result = document.getElementById('result');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileInput = document.getElementById('file');
+
+        // Mostrar vista previa de la imagen
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const fileField = document.getElementById('file');
+
+            if (fileField.files.length === 0) {
+                result.innerHTML = '<p class="error">Por favor selecciona una imagen</p>';
+                return;
+            }
+
+            formData.append('file', fileField.files[0]);
+            formData.append('organizacion_id', '1');
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    result.innerHTML = `
+                        <p class="success">${data.message}</p>
+                        <p>URL de la imagen: <a href="${data.url}" target="_blank">${data.url}</a></p>
+                        <img src="${data.url}" alt="Imagen subida" style="max-width: 300px;">
+                    `;
+                } else {
+                    result.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">Error de conexión: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
