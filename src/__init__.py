@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
 from .Models.modelo_db import BaseDatos 
-from flask_sqlalchemy import SQLAlchemy  # Importar SQLAlchemy
 import sqlite3
  # Importar la clase BaseDatos
 
