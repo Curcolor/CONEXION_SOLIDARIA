@@ -1,7 +1,7 @@
 from flask import render_template, request, jsonify
 
 def routes(app):
-
+    
     # PAGES ROUTES
     @app.route('/')
     @app.route('/inicio')
@@ -32,7 +32,6 @@ def routes(app):
     def recibir():
         return render_template('pages/recibir.html')
     
-    
     @app.route('/nuevoProyecto')
     def nuevoProyecto():
         return render_template('pages/nuevoProyecto.html')
@@ -44,6 +43,7 @@ def routes(app):
     @app.route('/nuevaOrganizacion')
     def nuevaOrganizacion():
         return render_template('pages/nuevaOR.html')
+    
     
     # API ROUTES
     @app.route('/api/registro', methods=['POST'])
