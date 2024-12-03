@@ -20,12 +20,12 @@
         <div class="registro-container">
             <div class="registro-card">
                 <h2><i class="fas fa-user-plus"></i> Crear Cuenta</h2>
-                <form id="registroForm" onsubmit="return validarFormulario()">
+                <form id="registroForm">
                     <!-- Información Personal -->
                     <div class="form-section">
                         <div class="form-group">
-                            <label for="nombre">Nombre Completo *</label>
-                            <input type="text" id="nombre" placeholder="Ej: Juan Pérez" required>
+                            <label for="nombre_completo">Nombre Completo *</label>
+                            <input type="text" id="nombre_completo" placeholder="Ej: Juan Pérez" required>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -43,8 +43,8 @@
                                 <input type="tel" id="telefono" placeholder="Ej: 612345678" required>
                             </div>
                             <div class="form-group">
-                                <label for="fechaNacimiento">Fecha de Nacimiento *</label>
-                                <input type="date" id="fechaNacimiento" required>
+                                <label for="fecha_nacimiento">Fecha de Nacimiento *</label>
+                                <input type="date" id="fecha_nacimiento" required>
                             </div>
                         </div>
                     </div>
@@ -53,12 +53,12 @@
                     <div class="form-section">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="password">Contraseña *</label>
-                                <input type="password" id="password" placeholder="Mínimo 8 caracteres" required>
+                                <label for="contraseña">Contraseña *</label>
+                                <input type="password" id="contraseña" placeholder="Mínimo 8 caracteres" required>
                             </div>
                             <div class="form-group">
-                                <label for="confirmPassword">Confirmar Contraseña *</label>
-                                <input type="password" id="confirmPassword" placeholder="Repite tu contraseña" required>
+                                <label for="confirmar_contraseña">Confirmar Contraseña *</label>
+                                <input type="password" id="confirmar_contraseña" placeholder="Repite tu contraseña" required>
                             </div>
                         </div>
                     </div>
@@ -81,6 +81,7 @@
                         <i class="fas fa-user-plus"></i> Crear Cuenta
                     </button>
                 </form>
+                <div id="resultado"></div>
                 <div class="registro-footer">
                     <p>¿Ya tienes una cuenta? <a href="/src/templates/pages/html/login.html">Inicia sesión aquí</a></p>
                 </div>

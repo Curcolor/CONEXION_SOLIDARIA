@@ -1,60 +1,82 @@
+document.getElementById('registroForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Verificar que las contraseñas coincidan
+    const contraseña = document.getElementById('contraseña').value;
+    const confirmarContraseña = document.getElementById('confirmar_contraseña').value;
+    
+    if (contraseña !== confirmarContraseña) {
+        document.getElementById('resultado').innerHTML = 
+            `<p class="error">Las contraseñas no coinciden</p>`;
+        return;
+    }
+
+    // Obtener los intereses seleccionados
+    const interesesSeleccionados = Array.from(document.querySelectorAll('input[name="intereses"]:checked'))
+        .map(checkbox => checkbox.value);
+    
+    // Recoger todos los datos del formulario
+    const userData = {
+        nombre_completo: document.getElementById('nombre_completo').value,
+        dni: document.getElementById('dni').value,
+        email: document.getElementById('email').value,
+        telefono: document.getElementById('telefono').value,
+        fecha_nacimiento: document.getElementById('fecha_nacimiento').value,
+        contraseña: contraseña,
+        intereses: interesesSeleccionados
+    };
+
+    // Para debugging
+    console.log('Datos a enviar:', userData);
+
+    try {
+        const response = await fetch('/api/registro', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            document.getElementById('resultado').innerHTML = 
+                `<p class="success">Usuario registrado exitosamente!</p>`;
+            document.getElementById('registroForm').reset();
+            // Redirigir al login después de un registro exitoso
+            setTimeout(() => {
+                window.location.href = '/src/templates/pages/html/login.html';
+            }, 2000);
+        } else {
+            document.getElementById('resultado').innerHTML = 
+                `<p class="error">Error: ${data.error || 'Error en el registro'}</p>`;
+        }
+    } catch (error) {
+        console.error('Error completo:', error);
+        document.getElementById('resultado').innerHTML = 
+            `<p class="error">Error de conexión: ${error.message}</p>`;
+    }
+});
+
+// Función para validar el formulario
 function validarFormulario() {
-    // Validar contraseña
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
+    const contraseña = document.getElementById('contraseña').value;
+    const confirmarContraseña = document.getElementById('confirmar_contraseña').value;
     
-    if (password !== confirmPassword) {
-        alert('Las contraseñas no coinciden');
+    if (contraseña !== confirmarContraseña) {
+        document.getElementById('resultado').innerHTML = 
+            `<p class="error">Las contraseñas no coinciden</p>`;
         return false;
     }
-
-    // Validar formato de contraseña
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    if (!passwordRegex.test(password)) {
-        alert('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número');
+    
+    // Verificar que al menos un interés esté seleccionado
+    const interesesSeleccionados = document.querySelectorAll('input[name="intereses"]:checked');
+    if (interesesSeleccionados.length === 0) {
+        document.getElementById('resultado').innerHTML = 
+            `<p class="error">Por favor selecciona al menos un área de interés</p>`;
         return false;
     }
-
-    // Validar áreas de interés
-    const intereses = document.querySelectorAll('input[name="intereses"]:checked');
-    if (intereses.length === 0) {
-        alert('Por favor seleccione al menos un área de interés');
-        return false;
-    }
-
-    // Validar edad mínima (18 años)
-    const fechaNacimiento = new Date(document.getElementById('fechaNacimiento').value);
-    const hoy = new Date();
-    const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-    if (edad < 18) {
-        alert('Debes ser mayor de 18 años para registrarte');
-        return false;
-    }
-
-    // Si todo está correcto, enviar el formulario
-    alert('Registro exitoso! Serás redirigido al inicio de sesión');
-    window.location.href = '/templates/pages/html/login.html';
-    return false; // Prevenir el envío del formulario (en un caso real, aquí harías el envío a tu backend)
+    
+    return true;
 }
-
-// Validación en tiempo real de la contraseña
-document.getElementById('password').addEventListener('input', function() {
-    const password = this.value;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    
-    if (passwordRegex.test(password)) {
-        this.style.borderColor = 'green';
-    } else {
-        this.style.borderColor = 'red';
-    }
-});
-
-// Validación en tiempo real de confirmación de contraseña
-document.getElementById('confirmPassword').addEventListener('input', function() {
-    const password = document.getElementById('password').value;
-    if (this.value === password) {
-        this.style.borderColor = 'green';
-    } else {
-        this.style.borderColor = 'red';
-    }
-});
