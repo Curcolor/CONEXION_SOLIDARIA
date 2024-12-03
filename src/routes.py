@@ -30,6 +30,10 @@ def routes(app):
     def recibir():
         return render_template('pages/recibir.html')
     
+    @app.route('/src/templates/pages/nuevoProyecto.html')
+    def nuevoProyecto():
+        return render_template('pages/nuevoProyecto.html')
+    
     @app.route('/api/registro', methods=['POST'])
     def registro_usuario():
         try:
