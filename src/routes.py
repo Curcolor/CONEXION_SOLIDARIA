@@ -1,39 +1,51 @@
 from flask import render_template, request, jsonify
 
 def routes(app):
+
+    # PAGES ROUTES
     @app.route('/')
-    @app.route('/src/templates/index.html')
+    @app.route('/inicio')
     def home():
         return render_template('index.html')
 
-    @app.route('/src/templates/pages/registro.html')
+    @app.route('/registrarse')
     def registro():
         return render_template('pages/registro.html')
     
-    @app.route('/src/templates/pages/login.html')
+    @app.route('/iniciarSesion')
     def login():
         return render_template('pages/login.html')
 
-    @app.route('/src/templates/pages/donar.html')
+    @app.route('/donar')
     def donar():
         return render_template('pages/donar.html')
 
-    @app.route('/src/templates/pages/perfil.html')
+    @app.route('/perfil')
     def perfil():
         return render_template('pages/perfil.html')
 
-    @app.route('/src/templates/pages/proyectos.html')
+    @app.route('/proyectos')
     def proyectos():
         return render_template('pages/proyectos.html')
 
-    @app.route('/src/templates/pages/recibir.html')
+    @app.route('/recibir')
     def recibir():
         return render_template('pages/recibir.html')
     
-    @app.route('/src/templates/pages/nuevoProyecto.html')
+    
+    @app.route('/nuevoProyecto')
     def nuevoProyecto():
         return render_template('pages/nuevoProyecto.html')
+
+    @app.route('/organizaciones')
+    def organizaciones():
+        return render_template('pages/organizaciones.html')
     
+    @app.route('/nuevaOrganizacion')
+    def nuevaOrganizacion():
+        return render_template('pages/nuevaOR.html')
+    
+    # API ROUTES
     @app.route('/api/registro', methods=['POST'])
     def registro_usuario():
         try:
@@ -75,7 +87,7 @@ def routes(app):
             print(f"Error en el registro: {str(e)}")  # Para debugging
             return jsonify({'error': str(e)}), 500
    
-    @app.route('/src/templates/pages/nuevaOR.html', methods=['GET', 'POST'])
+    @app.route('/api/nuevaOR', methods=['GET', 'POST'])
     def nuevaOR():
         if request.method == 'POST':
             try:
@@ -205,10 +217,6 @@ def routes(app):
                 })
         
         return render_template('pages/nuevaOR.html')
-
-    @app.route('/src/templates/pages/organizaciones.html')
-    def organizaciones():
-        return render_template('pages/organizaciones.html')
 
     @app.route('/api/organizaciones', methods=['GET'])
     def obtener_organizaciones():

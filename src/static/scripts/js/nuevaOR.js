@@ -42,7 +42,7 @@ function iniciarProcesoCreacionOrganizacion() {
 
         try {
             console.log('Enviando datos al servidor...');
-            const response = await fetch('/src/templates/pages/nuevaOR.html', {
+            const response = await fetch('/api/nuevaOR', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -65,8 +65,8 @@ function iniciarProcesoCreacionOrganizacion() {
                 mensajeElement.textContent = result.message;
                 
                 setTimeout(() => {
-                    //window.location.href = "/src/templates/pages/html/organizaciones.html";
-                }, 2000);
+                    window.location.href = "/organizaciones";
+                }, 1000);
             } else {
                 console.error('Error al crear la organización:', result.error);
                 mensajeElement.className = 'alert alert-danger';
