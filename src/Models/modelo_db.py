@@ -118,8 +118,17 @@ class BaseDatos:
                     VALUES (?, ?, ?, ?, ?, ?)
                 """, (nombre_completo, dni, email, telefono, fecha_nacimiento, contraseña))
                 return cursor.lastrowid
+        except sqlite3.IntegrityError as e:
+            error_msg = str(e)
+            if "UNIQUE constraint failed: usuarios.dni" in error_msg:
+                self.ultimo_error = "El DNI ya está registrado en el sistema"
+            elif "UNIQUE constraint failed: usuarios.email" in error_msg:
+                self.ultimo_error = "El correo electrónico ya está registrado en el sistema"
+            else:
+                self.ultimo_error = "Error de integridad en los datos"
+            return None
         except sqlite3.Error as e:
-            print(f"Error al crear usuario: {e}")
+            self.ultimo_error = f"Error al crear usuario: {str(e)}"
             return None
 
     # Ejemplo de buscar usuario

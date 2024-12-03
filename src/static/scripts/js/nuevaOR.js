@@ -42,7 +42,7 @@ function iniciarProcesoCreacionOrganizacion() {
 
         try {
             console.log('Enviando datos al servidor...');
-            const response = await fetch('/src/templates/pages/html/nuevaOR.html', {
+            const response = await fetch('/src/templates/pages/nuevaOR.html', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

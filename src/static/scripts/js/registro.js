@@ -46,7 +46,7 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
             document.getElementById('registroForm').reset();
             // Redirigir al login después de un registro exitoso
             setTimeout(() => {
-                window.location.href = '/src/templates/pages/html/login.html';
+                window.location.href = '/src/templates/pages/login.html';
             }, 2000);
         } else {
             document.getElementById('resultado').innerHTML = 
