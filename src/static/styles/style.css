@@ -480,5 +480,48 @@ nav a:hover i {
     color: inherit;
 }
 
+.btn-logout {
+    background: linear-gradient(135deg, #ff4b4b, #ff6b6b);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 75, 75, 0.2);
+    font-weight: 600;
+}
+
+.btn-logout i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-logout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 75, 75, 0.3);
+    background: linear-gradient(135deg, #ff3b3b, #ff5b5b);
+}
+
+.btn-logout:hover i {
+    transform: translateX(3px);
+}
+
+.btn-logout:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(255, 75, 75, 0.2);
+}
+
+.user-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 10px;
+}
+
 
 
