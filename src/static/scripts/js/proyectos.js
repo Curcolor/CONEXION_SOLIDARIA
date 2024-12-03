@@ -1,86 +1,80 @@
-// Función para cargar las organizaciones y crear proyectos
+async function obtenerProyectos() {
+    try {
+        const respuesta = await fetch('/api/proyectos', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!respuesta.ok) {
+            throw new Error('Error al obtener los proyectos');
+        }
+
+        const datos = await respuesta.json();
+        if (!datos.success) {
+            throw new Error(datos.message || 'Error al obtener los proyectos');
+        }
+
+        return datos.proyectos;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+// Función para cargar los proyectos
 async function cargarProyectos() {
     try {
-        // Obtener el contenedor de proyectos
         const projectList = document.getElementById('projectList');
+        if (!projectList) return;
         
-        // Limpiar el contenedor
         projectList.innerHTML = '';
-
-        // Insertar el proyecto de prueba fijo
-        const proyectoPrueba = `
-            <div class="project-card">
-                <img src="/src/static/images/helpp.jpg" alt="Proyecto de Educación">
-                <div class="project-content">
-                    <h3 class="project-title">Educación para Todos</h3>
-                    <p class="organization-name"><i class="fas fa-building"></i> Fundación Educativa</p>
-                    <p class="project-description">Ayudando a niños de bajos recursos a acceder a educación de calidad
-                    </p>
-                    <div class="project-meta">
-                        <div class="meta-item">
-                            <span>Meta: $10,000</span>
-                            <span>Recaudado: $7,500</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 75%"></div>
-                        </div>
-                        <p class="progress-text">75% completado</p>
-                    </div>
-                    <div class="project-actions">
-                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
-                    </div>
-                </div>
-            </div>
-        `;
         
-        projectList.innerHTML = proyectoPrueba;
-
-        // Obtener las organizaciones registradas
-        const response = await fetch('/api/organizaciones');
-        const organizaciones = await response.json();
-
-        // Crear una tarjeta de proyecto para cada organización
-        organizaciones.forEach(org => {
-            const projectCard = crearTarjetaProyecto(org);
+        const proyectos = await obtenerProyectos();
+        
+        proyectos.forEach(proyecto => {
+            const projectCard = crearTarjetaProyecto(proyecto);
             projectList.appendChild(projectCard);
         });
 
     } catch (error) {
         console.error('Error al cargar los proyectos:', error);
+        const projectList = document.getElementById('projectList');
+        if (projectList) {
+            projectList.innerHTML = '<p class="error">Error al cargar los proyectos. Por favor, intente más tarde.</p>';
+        }
     }
 }
 
 // Función para crear una tarjeta de proyecto individual
-function crearTarjetaProyecto(organizacion) {
-    // Crear elemento div para la tarjeta
+function crearTarjetaProyecto(proyecto) {
     const card = document.createElement('div');
     card.className = 'project-card';
 
-    // Generar un valor aleatorio para el progreso (solo para demostración)
-    const progreso = Math.floor(Math.random() * 100);
-    const meta = 10000;
-    const recaudado = (meta * progreso) / 100;
+    // Calcular el porcentaje de progreso
+    const progreso = (proyecto.monto_recaudado / proyecto.meta_financiera) * 100;
 
     card.innerHTML = `
-        <img src="${organizacion.imagen || '/src/static/images/helpp.jpg'}" alt="Proyecto de ${organizacion.nombre}">
+        <img src="${proyecto.imagen_url || '/src/static/images/helpp.jpg'}" alt="Proyecto ${proyecto.titulo}">
         <div class="project-content">
-            <h3 class="project-title">Proyecto ${organizacion.nombre}</h3>
+            <h3 class="project-title">${proyecto.titulo}</h3>
             <p class="organization-name">
-                <i class="fas fa-building"></i> ${organizacion.nombre}
+                <i class="fas fa-building"></i> ${proyecto.organizacion_nombre}
             </p>
-            <p class="project-description">${organizacion.descripcion}</p>
+            <p class="project-description">${proyecto.descripcion}</p>
             <div class="project-meta">
                 <div class="meta-item">
-                    <span>Meta: $${meta.toLocaleString()}</span>
-                    <span>Recaudado: $${recaudado.toLocaleString()}</span>
+                    <span>Meta: $${proyecto.meta_financiera.toLocaleString()}</span>
+                    <span>Recaudado: $${proyecto.monto_recaudado.toLocaleString()}</span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress" style="width: ${progreso}%"></div>
                 </div>
-                <p class="progress-text">${progreso}% completado</p>
+                <p class="progress-text">${progreso.toFixed(1)}% completado</p>
             </div>
             <div class="project-actions">
-                <button class="btn-donar" onclick="donarProyecto('${organizacion.id}')">
+                <button class="btn-donar" onclick="donarProyecto('${proyecto.id}')">
                     <i class="fas fa-hand-holding-heart"></i> Donar
                 </button>
             </div>
@@ -91,15 +85,40 @@ function crearTarjetaProyecto(organizacion) {
 }
 
 // Función para manejar la donación
-function donarProyecto(organizacionId) {
-    // Redirigir a la página de donación con el ID de la organización
-    window.location.href = `/src/templates/pages/donar.html?org=${organizacionId}`;
+function donarProyecto(proyectoId) {
+    window.location.href = `/src/templates/pages/donar.html?proyecto=${proyectoId}`;
 }
 
 // Cargar los proyectos cuando la página se cargue
 document.addEventListener('DOMContentLoaded', cargarProyectos);
 
-// Función para actualizar los proyectos periódicamente (opcional)
-setInterval(cargarProyectos, 300000); // Actualizar cada 5 minutos
+// Función para mostrar proyectos en formato tabla (si es necesario)
+function mostrarProyectosTabla(proyectos) {
+    const tbody = document.querySelector('#proyectosTable tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = proyectos.map(proyecto => `
+        <tr class="proyecto-row">
+            <td class="proyecto-imagen">
+                <img src="${proyecto.imagen_url || '/src/static/images/helpp.jpg'}" alt="${proyecto.titulo}">
+            </td>
+            <td class="proyecto-titulo">${proyecto.titulo}</td>
+            <td class="proyecto-descripcion">${proyecto.descripcion}</td>
+            <td class="proyecto-meta">$${proyecto.meta_financiera.toLocaleString()}</td>
+            <td class="proyecto-recaudado">$${proyecto.monto_recaudado.toLocaleString()}</td>
+            <td class="proyecto-estado">${proyecto.estado}</td>
+            <td class="proyecto-organizacion">${proyecto.organizacion_nombre}</td>
+            <td class="proyecto-acciones">
+                <button onclick="donarProyecto('${proyecto.id}')" class="btn-donar">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Actualizar proyectos cada cierto tiempo (opcional)
+const INTERVALO_ACTUALIZACION = 300000; // 5 minutos
+setInterval(cargarProyectos, INTERVALO_ACTUALIZACION);
 
 
