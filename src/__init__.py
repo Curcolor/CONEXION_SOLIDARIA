@@ -3,9 +3,9 @@ from flask_cors import CORS
 import os
 from .Models.modelo_db import BaseDatos 
 import sqlite3
- # Importar la clase BaseDatos
+# Importar la clase BaseDatos
 
- # Configuración de la base de datos SQLite
+# Configuración de la base de datos SQLite
 app = Flask(__name__, static_url_path="/src/static/", static_folder="static")
 CORS(app)  # Permitir peticiones cross-origin
 db = BaseDatos()  # Crear instancia de la base de datos
