@@ -112,7 +112,7 @@ def routes(app):
         except Exception as e:
             print(f"Error en el registro: {str(e)}")  # Para debugging
             return jsonify({'error': str(e)}), 500
-   
+
     @app.route('/api/nuevaOR', methods=['GET', 'POST'])
     def nuevaOR():
         if request.method == 'POST':
