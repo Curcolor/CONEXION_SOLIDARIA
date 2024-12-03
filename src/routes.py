@@ -1,4 +1,5 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, session, redirect, url_for
+from src.Models.modelo_db import BaseDatos
 
 def routes(app):
     
@@ -22,7 +23,28 @@ def routes(app):
 
     @app.route('/perfil')
     def perfil():
-        return render_template('pages/perfil.html')
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        
+        # Obtener datos del usuario de la sesión
+        usuario = {
+            'id': session.get('usuario_id'),
+            'nombre': session.get('usuario_nombre'),
+            'email': session.get('usuario_email')
+        }
+        
+        # Inicializar la base de datos
+        db = BaseDatos()
+        
+        # Aquí puedes agregar código para obtener las organizaciones y donaciones del usuario
+        # Por ahora, inicializamos con valores vacíos
+        organizaciones = []
+        total_donado = 0
+        
+        return render_template('pages/perfil.html', 
+                             usuario=usuario['nombre'],  # Pasamos el nombre del usuario
+                             total_donado=total_donado,
+                             organizaciones=organizaciones)
 
     @app.route('/proyectos')
     def proyectos():
@@ -331,4 +353,63 @@ def routes(app):
                 cursor.close()
             if connection:
                 connection.close()
+
+    @app.route('/api/login', methods=['POST'])
+    def login_usuario():
+        try:
+            datos = request.get_json()
+            
+            if not datos or 'email' not in datos or 'password' not in datos:
+                return jsonify({
+                    'success': False,
+                    'mensaje': 'Faltan datos de inicio de sesión'
+                }), 400
+
+            db = BaseDatos()
+            usuario = db.buscar_usuario_por_email(datos['email'])
+            
+            if usuario and usuario[6] == datos['password']:
+                # Guardar datos en la sesión
+                session['logged_in'] = True
+                session['usuario_id'] = usuario[0]
+                session['usuario_nombre'] = usuario[1]
+                session['usuario_email'] = usuario[3]
+                
+                return jsonify({
+                    'success': True,
+                    'mensaje': 'Inicio de sesión exitoso',
+                    'usuario': {
+                        'id': usuario[0],
+                        'nombre': usuario[1],
+                        'email': usuario[3]
+                    }
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'mensaje': 'Correo electrónico o contraseña incorrectos'
+                }), 401
+
+        except Exception as e:
+            print(f"Error en el login: {str(e)}")
+            return jsonify({
+                'success': False,
+                'mensaje': 'Error al intentar iniciar sesión'
+            }), 500
+
+    @app.route('/api/session-status')
+    def session_status():
+        return jsonify({
+            'logged_in': session.get('logged_in', False),
+            'usuario': {
+                'id': session.get('usuario_id'),
+                'nombre': session.get('usuario_nombre'),
+                'email': session.get('usuario_email')
+            } if session.get('logged_in') else None
+        })
+
+    @app.route('/api/logout')
+    def logout():
+        session.clear()
+        return jsonify({'success': True})
 
