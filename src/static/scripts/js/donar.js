@@ -87,6 +87,7 @@ function actualizarOrganizaciones() {
     }
 }
 
+
 // Procesar la donación
 async function procesarDonacion(event) {
     event.preventDefault();
