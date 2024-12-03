@@ -1,205 +1,229 @@
-// Variables globales
-let organizacionesPorTipo = {};
-let proyectoSeleccionado = null;
+// Configuración y constantes
+const CONFIG = {
+    API_ENDPOINTS: {
+        ORGANIZACIONES: '/api/organizaciones',
+        DONACIONES: '/api/donaciones',
+        SESSION: '/api/session-status'
+    },
+    REDIRECT_URLS: {
+        LOGIN: '/iniciarSesion',
+        PROYECTOS: '/proyectos'
+    },
+    DELAY: 2000
+};
 
-// Cargar datos cuando se inicia la página
-document.addEventListener('DOMContentLoaded', async () => {
-    // Obtener el ID del proyecto de la URL si existe
-    const urlParams = new URLSearchParams(window.location.search);
-    proyectoSeleccionado = urlParams.get('proyecto');
+// Clase principal para manejar donaciones
+class DonacionManager {
+    constructor() {
+        this.proyectoSeleccionado = null;
+        this.formElements = {
+            form: null,
+            montoInput: null,
+            organizacionSelect: null
+        };
+        this.init();
+    }
 
-    // Cargar las organizaciones
-    const organizaciones = await obtenerOrganizaciones();
-    await mostrarOrganizacionesEnSelect(organizaciones);
-    
-    // Configurar los event listeners
-    configurarEventListeners();
-});
-
-// Función para cargar las organizaciones
-async function obtenerOrganizaciones() {
-    try {
-        const respuesta = await fetch('/api/organizaciones', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
+    async init() {
+        try {
+            if (!this.obtenerElementosFormulario()) {
+                console.error('Error: No se encontraron todos los elementos del formulario');
+                return;
             }
+            this.obtenerProyectoDeURL();
+            await this.cargarOrganizaciones();
+            this.configurarEventListeners();
+        } catch (error) {
+            console.error('Error en la inicialización:', error);
+        }
+    }
+
+    obtenerProyectoDeURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.proyectoSeleccionado = urlParams.get('proyecto');
+    }
+
+    async cargarOrganizaciones() {
+        try {
+            const organizaciones = await this.fetchOrganizaciones();
+            this.mostrarOrganizaciones(organizaciones);
+        } catch (error) {
+            console.error('Error al cargar organizaciones:', error);
+        }
+    }
+
+    async fetchOrganizaciones() {
+        const respuesta = await fetch(CONFIG.API_ENDPOINTS.ORGANIZACIONES, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (!respuesta.ok) {
-            throw new Error('Error al obtener las organizaciones');
+            throw new Error('Error en la respuesta del servidor');
         }
 
         const datos = await respuesta.json();
         if (!datos.success) {
-            throw new Error(datos.message || 'Error al obtener las organizaciones');
+            throw new Error(datos.message || 'Error al obtener organizaciones');
         }
 
         return datos.organizaciones;
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
-    }
-}
-
-// Función para mostrar las organizaciones en el select
-function mostrarOrganizacionesEnSelect(organizaciones) {
-    const selectOrg = document.getElementById('organizacion');
-    if (!selectOrg) return;
-
-    // Opción por defecto
-    selectOrg.innerHTML = '<option value="">Seleccione una organización</option>';
-
-    // Añadir cada organización como una opción
-    organizaciones.forEach(org => {
-        selectOrg.innerHTML += `
-            <option value="${org.id}">
-                ${org.nombre} - ${org.categoria}
-            </option>
-        `;
-    });
-}
-
-// Configurar event listeners
-function configurarEventListeners() {
-    const tipoAyudaSelect = document.getElementById('tipo_ayuda');
-    const organizacionSelect = document.getElementById('organizacion');
-    const formDonacion = document.getElementById('form_donacion');
-
-    tipoAyudaSelect.addEventListener('change', actualizarOrganizaciones);
-    formDonacion.addEventListener('submit', procesarDonacion);
-}
-
-// Actualizar lista de organizaciones según el tipo de ayuda
-function actualizarOrganizaciones() {
-    const tipoAyuda = document.getElementById('tipo_ayuda').value;
-    const organizacionSelect = document.getElementById('organizacion');
-    
-    organizacionSelect.innerHTML = '<option value="">Seleccione una organización</option>';
-
-    if (tipoAyuda && organizacionesPorTipo[tipoAyuda]) {
-        organizacionesPorTipo[tipoAyuda].forEach(org => {
-            const option = document.createElement('option');
-            option.value = org.id;
-            option.textContent = org.nombre;
-            organizacionSelect.appendChild(option);
-        });
-    }
-}
-
-
-// Procesar la donación
-async function procesarDonacion(event) {
-    event.preventDefault();
-
-    // Verificar si el usuario está logueado
-    const sessionResponse = await fetch('/api/session-status');
-    const sessionData = await sessionResponse.json();
-
-    if (!sessionData.logged_in) {
-        mostrarMensaje('Debe iniciar sesión para realizar una donación', 'error');
-        setTimeout(() => {
-            window.location.href = '/iniciarSesion';
-        }, 2000);
-        return;
     }
 
-    const tipoAyuda = document.getElementById('tipo_ayuda').value;
-    const organizacionId = document.getElementById('organizacion').value;
-    const monto = document.getElementById('monto_personalizado').value;
-
-    if (!tipoAyuda || !organizacionId || !monto) {
-        mostrarMensaje('Por favor complete todos los campos', 'error');
-        return;
-    }
-
-    try {
-        const donacionData = {
-            monto: parseFloat(monto),
-            tipo_ayuda: tipoAyuda,
-            usuarios_id_usuario: sessionData.usuario.id,
-            proyectos_id_proyecto: proyectoSeleccionado || null,
-            organizaciones_id_organizacion: parseInt(organizacionId)
-        };
-
-        const response = await fetch('/api/donaciones', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(donacionData)
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            mostrarMensaje('¡Donación realizada con éxito!', 'success');
-            setTimeout(() => {
-                window.location.href = '/proyectos';
-            }, 2000);
-        } else {
-            throw new Error(data.message || 'Error al procesar la donación');
+    mostrarOrganizaciones(organizaciones) {
+        if (!this.formElements.organizacionSelect) {
+            console.error('Error: No se encontró el select de organizaciones');
+            return;
         }
 
-    } catch (error) {
-        console.error('Error:', error);
-        mostrarMensaje(error.message || 'Error al procesar la donación', 'error');
+        this.formElements.organizacionSelect.innerHTML = '<option value="">Seleccione una organización</option>';
+        organizaciones.forEach(org => {
+            this.formElements.organizacionSelect.innerHTML += `
+                <option value="${org.id}">${org.nombre} - ${org.categoria}</option>
+            `;
+        });
+    }
+
+    configurarEventListeners() {
+        if (this.formElements.form) {
+            this.formElements.form.addEventListener('submit', (e) => this.procesarDonacion(e));
+        } else {
+            console.error('Error: No se encontró el formulario');
+        }
+    }
+
+    validarDonacion(monto, organizacionId) {
+        if (!monto || isNaN(monto) || parseFloat(monto) <= 0) {
+            this.mostrarMensaje('Por favor ingrese un monto válido', 'error');
+            return false;
+        }
+        if (!organizacionId) {
+            this.mostrarMensaje('Por favor seleccione una organización', 'error');
+            return false;
+        }
+        return true;
+    }
+
+    async verificarSesion() {
+        const response = await fetch(CONFIG.API_ENDPOINTS.SESSION);
+        const sessionData = await response.json();
+
+        if (!sessionData.logged_in) {
+            console.error('Error: Usuario no autenticado');
+            setTimeout(() => {
+                window.location.href = CONFIG.REDIRECT_URLS.LOGIN;
+            }, CONFIG.DELAY);
+            return null;
+        }
+
+        return sessionData;
+    }
+
+    async procesarDonacion(event) {
+        event.preventDefault();
+
+        try {
+            if (!this.formElements.montoInput || !this.formElements.organizacionSelect) {
+                throw new Error('No se encontraron los elementos del formulario');
+            }
+
+            const monto = this.formElements.montoInput.value;
+            const organizacionId = this.formElements.organizacionSelect.value;
+
+            if (!this.validarDonacion(monto, organizacionId)) {
+                return;
+            }
+
+            const sessionData = await this.verificarSesion();
+            if (!sessionData) return;
+
+            await this.enviarDonacion({
+                monto: parseFloat(monto),
+                usuarios_id_usuario: sessionData.usuario.id,
+                proyectos_id_proyecto: this.proyectoSeleccionado || 1, // Valor por defecto si no hay proyecto
+                organizaciones_id_organizacion: parseInt(organizacionId)
+            });
+
+        } catch (error) {
+            console.error('Error al procesar la donación:', error);
+            this.mostrarMensaje(error.message, 'error');
+        }
+    }
+
+    async enviarDonacion(donacionData) {
+        try {
+            const response = await fetch(CONFIG.API_ENDPOINTS.DONACIONES, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(donacionData)
+            });
+
+            // Verificar si la respuesta es JSON
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error(`Error del servidor: Respuesta no válida (${response.status})`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('¡Donación realizada con éxito!');
+                // Mostrar mensaje de éxito usando las clases CSS existentes
+                this.mostrarMensaje('¡Donación realizada con éxito!', 'success');
+                setTimeout(() => {
+                    window.location.href = CONFIG.REDIRECT_URLS.PROYECTOS;
+                }, CONFIG.DELAY);
+            } else {
+                throw new Error(data.message || 'Error al procesar la donación');
+            }
+        } catch (error) {
+            console.error('Error al procesar la donación:', error);
+            this.mostrarMensaje(error.message, 'error');
+        }
+    }
+
+    mostrarMensaje(mensaje, tipo) {
+        const container = document.querySelector('.donation-container');
+        if (!container) return;
+
+        const mensajeExistente = container.querySelector('.mensaje');
+        if (mensajeExistente) {
+            mensajeExistente.remove();
+        }
+
+        const mensajeElement = document.createElement('div');
+        mensajeElement.className = `mensaje mensaje-${tipo}`;
+        mensajeElement.innerHTML = mensaje;
+
+        container.insertBefore(mensajeElement, container.firstChild);
+
+        setTimeout(() => {
+            mensajeElement.remove();
+        }, CONFIG.DELAY);
+    }
+
+    obtenerElementosFormulario() {
+        this.formElements = {
+            form: document.getElementById('form_donacion'),
+            montoInput: document.getElementById('monto_personalizado'),
+            organizacionSelect: document.getElementById('organizacion')
+        };
+
+        const elementosFaltantes = Object.entries(this.formElements)
+            .filter(([key, element]) => !element)
+            .map(([key]) => key);
+
+        if (elementosFaltantes.length > 0) {
+            console.error('Elementos no encontrados:', elementosFaltantes);
+            return false;
+        }
+
+        return true;
     }
 }
 
-// Función para mostrar mensajes
-function mostrarMensaje(mensaje, tipo) {
-    const container = document.querySelector('.container');
-    const mensajeExistente = document.querySelector('.mensaje');
-    
-    if (mensajeExistente) {
-        mensajeExistente.remove();
-    }
-
-    const mensajeElement = document.createElement('div');
-    mensajeElement.className = `mensaje mensaje-${tipo}`;
-    mensajeElement.innerHTML = `
-        <i class="fas ${tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-        ${mensaje}
-    `;
-
-    container.insertBefore(mensajeElement, container.firstChild);
-
-    // Remover el mensaje después de 5 segundos
-    setTimeout(() => {
-        mensajeElement.remove();
-    }, 5000);
-}
-// Estilos CSS para los mensajes (agregar al archivo CSS)
-const estilos = `
-.mensaje {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.mensaje-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.mensaje-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.mensaje i {
-    font-size: 1.2em;
-}
-`;
-
-// Agregar estilos dinámicamente
-const styleSheet = document.createElement('style');
-styleSheet.textContent = estilos;
-document.head.appendChild(styleSheet);
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    new DonacionManager();
+});
 

@@ -663,3 +663,93 @@ def routes(app):
             if connection:
                 connection.close()
 
+    @app.route('/api/donaciones', methods=['POST'])
+    def procesar_donacion():
+        try:
+            data = request.get_json()
+            print("Datos recibidos en /api/donaciones:", data)
+            
+            # Validar campos requeridos según la estructura de la tabla
+            campos_requeridos = ['monto', 'usuarios_id_usuario', 'proyectos_id_proyecto']
+            for campo in campos_requeridos:
+                if campo not in data:
+                    print(f"Error: Campo faltante: {campo}")
+                    return jsonify({
+                        "success": False,
+                        "message": f"El campo {campo} es requerido"
+                    }), 400
+
+            # Validar tipos de datos
+            try:
+                monto = float(data['monto'])
+                usuario_id = int(data['usuarios_id_usuario'])
+                proyecto_id = int(data['proyectos_id_proyecto'])
+                
+                print("Valores convertidos:")
+                print(f"- Monto: {monto} (tipo: {type(monto)})")
+                print(f"- Usuario ID: {usuario_id} (tipo: {type(usuario_id)})")
+                print(f"- Proyecto ID: {proyecto_id} (tipo: {type(proyecto_id)})")
+                
+                if monto <= 0:
+                    print("Error: Monto inválido (debe ser mayor a 0)")
+                    return jsonify({
+                        "success": False,
+                        "message": "El monto debe ser mayor a 0"
+                    }), 400
+                
+            except ValueError as e:
+                print(f"Error de conversión de tipos: {str(e)}")
+                return jsonify({
+                    "success": False,
+                    "message": "Error en el formato de los datos"
+                }), 400
+
+            connection = app.get_db()
+            cursor = connection.cursor()
+
+            try:
+                valores = (monto, usuario_id, proyecto_id, data.get('tipo_ayuda'))
+                print("Valores a insertar en la base de datos:", valores)
+                
+                # Insertar la donación con la estructura correcta de la tabla
+                query = """
+                INSERT INTO donaciones (
+                    monto,
+                    usuarios_id_usuario,
+                    proyectos_id_proyecto,
+                    tipo_ayuda
+                ) VALUES (?, ?, ?, ?)
+                """
+                
+                cursor.execute(query, valores)
+                
+                # Actualizar el monto recaudado del proyecto
+                cursor.execute("""
+                    UPDATE proyectos 
+                    SET monto_recaudado = monto_recaudado + ?
+                    WHERE id_proyecto = ?
+                """, (monto, proyecto_id))
+                
+                connection.commit()
+                
+                return jsonify({
+                    "success": True,
+                    "message": "Donación procesada exitosamente"
+                })
+
+            except Exception as e:
+                connection.rollback()
+                return jsonify({
+                    "success": False,
+                    "message": f"Error al procesar la donación: {str(e)}"
+                }), 500
+            finally:
+                cursor.close()
+                connection.close()
+
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "message": f"Error en el servidor: {str(e)}"
+            }), 500
+
