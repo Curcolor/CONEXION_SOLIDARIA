@@ -332,3 +332,192 @@ def routes(app):
             if connection:
                 connection.close()
 
+    @app.route('/api/proyectos', methods=['GET', 'POST'])
+    def crear_proyecto():
+        if request.method == 'POST':
+            try:
+                data = request.get_json()
+                print("Datos recibidos:", data)  # Log para verificar los datos recibidos
+                
+                if not data:
+                    return jsonify({
+                        "success": False, 
+                        "message": "No se recibieron datos en formato JSON"
+                    })
+                
+                # Validar campos requeridos
+                campos_requeridos = ['titulo', 'meta_financiera', 'organizaciones_id_organizacion']
+                for campo in campos_requeridos:
+                    if not data.get(campo):
+                        return jsonify({
+                            "success": False, 
+                            "message": f"El campo {campo} es obligatorio"
+                        })
+
+                connection = app.get_db()
+                if not connection:
+                    return jsonify({
+                        "success": False,
+                        "message": "No se pudo conectar a la base de datos"
+                    })
+
+                try:
+                    cursor = connection.cursor()
+                    
+                    query = """
+                    INSERT INTO proyectos (
+                        titulo,
+                        descripcion,
+                        meta_financiera,
+                        monto_recaudado,
+                        categoria,
+                        imagen_url,
+                        fecha_inicio,
+                        fecha_fin,
+                        estado,
+                        organizaciones_id_organizacion
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """
+                    
+                    valores = (
+                        data.get('titulo'),
+                        data.get('descripcion'),
+                        float(data.get('meta_financiera')),
+                        0.0,  # monto_recaudado inicial en 0
+                        data.get('categoria'),
+                        data.get('imagen_url'),
+                        data.get('fecha_inicio'),
+                        data.get('fecha_fin'),
+                        data.get('estado'),
+                        int(data.get('organizaciones_id_organizacion'))
+                    )
+                    print("Valores a insertar:", valores)  # Log para verificar valores
+                    
+                    cursor.execute(query, valores)
+                    id_proyecto = cursor.lastrowid
+                    print("ID generado:", id_proyecto)  # Log para verificar ID
+                    
+                    connection.commit()
+                    
+                    # Verificar si se insertó correctamente
+                    cursor.execute("""
+                        SELECT 
+                            p.id_proyecto,
+                            p.titulo,
+                            p.descripcion,
+                            p.meta_financiera,
+                            p.monto_recaudado,
+                            p.categoria,
+                            p.imagen_url,
+                            p.fecha_inicio,
+                            p.fecha_fin,
+                            p.estado,
+                            o.nombre as organizacion_nombre
+                        FROM proyectos p
+                        JOIN organizaciones o ON p.organizaciones_id_organizacion = o.id_organizacion
+                        WHERE p.id_proyecto = ?
+                    """, (id_proyecto,))
+                    
+                    proyecto = cursor.fetchone()
+                    
+                    if proyecto:
+                        return jsonify({
+                            "success": True,
+                            "message": "Proyecto creado correctamente",
+                            "proyecto": {
+                                "id": proyecto[0],
+                                "titulo": proyecto[1],
+                                "descripcion": proyecto[2],
+                                "meta_financiera": float(proyecto[3]),
+                                "monto_recaudado": float(proyecto[4]),
+                                "categoria": proyecto[5],
+                                "imagen_url": proyecto[6],
+                                "fecha_inicio": proyecto[7],
+                                "fecha_fin": proyecto[8],
+                                "estado": proyecto[9],
+                                "organizacion_nombre": proyecto[10]
+                            }
+                        })
+                    else:
+                        return jsonify({
+                            "success": False,
+                            "message": "El proyecto se creó pero no se pudo recuperar la información"
+                        })
+
+                except Exception as e:
+                    print("Error en la base de datos:", str(e))  # Log del error
+                    return jsonify({
+                        "success": False,
+                        "message": "Error al guardar en la base de datos",
+                        "error": str(e)
+                    })
+                finally:
+                    cursor.close()
+                    connection.close()
+
+            except Exception as e:
+                print("Error inesperado:", str(e))  # Log del error
+                return jsonify({
+                    "success": False,
+                    "message": "Error inesperado en el servidor",
+                    "error": str(e)
+                })
+        
+        # Si es GET, obtener todos los proyectos
+        elif request.method == 'GET':
+            try:
+                connection = app.get_db()
+                cursor = connection.cursor()
+                
+                cursor.execute("""
+                    SELECT 
+                        p.id_proyecto,
+                        p.titulo,
+                        p.descripcion,
+                        p.meta_financiera,
+                        p.monto_recaudado,
+                        p.categoria,
+                        p.imagen_url,
+                        p.fecha_inicio,
+                        p.fecha_fin,
+                        p.estado,
+                        o.nombre as organizacion_nombre
+                    FROM proyectos p
+                    JOIN organizaciones o ON p.organizaciones_id_organizacion = o.id_organizacion
+                """)
+                
+                proyectos = cursor.fetchall()
+                
+                return jsonify({
+                    "success": True,
+                    "proyectos": [{
+                        "id": p[0],
+                        "titulo": p[1],
+                        "descripcion": p[2],
+                        "meta_financiera": float(p[3]),
+                        "monto_recaudado": float(p[4]),
+                        "categoria": p[5],
+                        "imagen_url": p[6],
+                        "fecha_inicio": p[7],
+                        "fecha_fin": p[8],
+                        "estado": p[9],
+                        "organizacion_nombre": p[10]
+                    } for p in proyectos]
+                })
+                
+            except Exception as e:
+                print("Error al obtener proyectos:", str(e))
+                return jsonify({
+                    "success": False,
+                    "message": "Error al obtener los proyectos",
+                    "error": str(e)
+                }), 500
+            finally:
+                if cursor:
+                    cursor.close()
+                if connection:
+                    connection.close()
+
+        return render_template('pages/nuevoProyecto.html')
+
