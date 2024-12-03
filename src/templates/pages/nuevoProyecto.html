@@ -26,7 +26,12 @@
         <a href="/recibir" data-tooltip="Conecta con quienes ofrecen ayudas"><i class="fas fa-hand-holding-heart"></i> Recibir</a>
     </nav>
 
-    <div class="container">
+    <main class="container">
+        {% if not session.logged_in %}
+        <div class="alert alert-warning">
+            <p>Debes iniciar sesión para crear un nuevo proyecto.</p>
+        </div>
+        {% endif %}
         <div class="form-container">
             <div class="card">
                 <div class="card-header">
@@ -110,7 +115,11 @@
                 <div id="mensaje-respuesta"></div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Community. Todos los derechos reservados.</p>
+    </footer>
 
     <script src="/src/static/scripts/js/nuevoProyecto.js"></script>
 </body>

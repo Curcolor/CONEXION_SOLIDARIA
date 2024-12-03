@@ -1,3 +1,14 @@
+async function verificarSesion() {
+    try {
+        const response = await fetch('/api/session-status');
+        const data = await response.json();
+        return data.logged_in;
+    } catch (error) {
+        console.error('Error al verificar sesión:', error);
+        return false;
+    }
+}
+
 async function obtenerProyectos() {
     try {
         const respuesta = await fetch('/api/proyectos', {
@@ -86,11 +97,44 @@ function crearTarjetaProyecto(proyecto) {
 
 // Función para manejar la donación
 function donarProyecto(proyectoId) {
-    window.location.href = `/src/templates/pages/donar.html?proyecto=${proyectoId}`;
+    window.location.href = `/donar?proyecto_id=${proyectoId}`;
 }
 
 // Cargar los proyectos cuando la página se cargue
-document.addEventListener('DOMContentLoaded', cargarProyectos);
+document.addEventListener('DOMContentLoaded', () => {
+    const btnCrear = document.querySelector('.btn-crear');
+    if (btnCrear) {
+        btnCrear.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const estaLogueado = await verificarSesion();
+            
+            if (!estaLogueado) {
+                Swal.fire({
+                    title: '¡Acceso Restringido!',
+                    text: 'Debes iniciar sesión para crear un proyecto',
+                    icon: 'info',
+                    confirmButtonText: 'Iniciar Sesión',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar',
+                    background: '#fff',
+                    customClass: {
+                        confirmButton: 'swal-confirm-button',
+                        cancelButton: 'swal-cancel-button'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/iniciarSesion';
+                    }
+                });
+            } else {
+                window.location.href = '/nuevoProyecto';
+            }
+        });
+    }
+    
+    // Mantener el resto del código de DOMContentLoaded
+    cargarProyectos();
+});
 
 // Función para mostrar proyectos en formato tabla (si es necesario)
 function mostrarProyectosTabla(proyectos) {
