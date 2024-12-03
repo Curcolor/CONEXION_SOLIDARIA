@@ -246,4 +246,40 @@
     }
 }
 
+/* Estilos para SweetAlert2 */
+.swal2-popup {
+    border-radius: 15px !important;
+    padding: 2em !important;
+}
+
+.swal2-title {
+    color: #2c3e50 !important;
+    font-size: 1.6em !important;
+}
+
+.swal2-text {
+    color: #34495e !important;
+}
+
+.swal-confirm-button {
+    background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3) !important;
+}
+
+.swal-cancel-button {
+    background: #e74c3c !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    color: white !important;
+}
+
+.swal2-icon {
+    border-color: #3498db !important;
+    color: #3498db !important;
+}
+
 

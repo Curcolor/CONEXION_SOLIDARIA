@@ -119,6 +119,7 @@ nav a::after {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
 }
 
 nav a:hover::after {
@@ -521,6 +522,19 @@ nav a:hover i {
     justify-content: center;
     margin-top: 20px;
     padding: 10px;
+}
+
+.alert {
+    padding: 15px;
+    background-color: #f9c74f;
+    color: #333;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.alert-warning {
+    background-color: #f9c74f;
 }
 
 

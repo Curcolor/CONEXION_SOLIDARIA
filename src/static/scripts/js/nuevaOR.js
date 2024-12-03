@@ -1,6 +1,18 @@
 console.log('Script de nueva organización cargado');
 
-const form = document.getElementById('orgForm');
+// Verificar el estado de la sesión al cargar la página
+async function verificarSesion() {
+    try {
+        const response = await fetch('/api/session-status');
+        const data = await response.json();
+        return data.logged_in;
+    } catch (error) {
+        console.error('Error al verificar la sesión:', error);
+        return false;
+    }
+}
+
+const form = document.getElementById('organizacionForm');
 if (form) {
     console.log('Formulario de organización encontrado');
     iniciarProcesoCreacionOrganizacion();
@@ -8,35 +20,51 @@ if (form) {
     console.error('Formulario de organización no encontrado');
 }
 
-function iniciarProcesoCreacionOrganizacion() {
-    document.getElementById('orgForm').addEventListener('submit', async function(event) {
+async function iniciarProcesoCreacionOrganizacion() {
+    document.getElementById('organizacionForm').addEventListener('submit', async function(event) {
         event.preventDefault();
         console.log('Formulario de organización enviado');
+
+        // Verificar sesión antes de procesar el formulario
+        const sesionActiva = await verificarSesion();
+        if (!sesionActiva) {
+            // Mostrar mensaje de alerta personalizado
+            const alertaDiv = document.createElement('div');
+            alertaDiv.className = 'alert alert-warning fadeIn';
+            alertaDiv.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                Debes iniciar sesión para crear una nueva organización.
+                <a href="/iniciarSesion" class="alert-link">Iniciar sesión</a>
+            `;
+            
+            // Insertar la alerta al principio del contenedor principal
+            const container = document.querySelector('.container');
+            container.insertBefore(alertaDiv, container.firstChild);
+
+            // Hacer scroll hacia arriba para mostrar el mensaje
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Redirigir después de un breve delay
+            setTimeout(() => {
+                window.location.href = '/iniciarSesion';
+            }, 2000);
+            
+            return;
+        }
 
         // Obtener los valores del formulario
         const nombreInput = document.querySelector("input[name='nombre']");
         const descripcionInput = document.querySelector("textarea[name='descripcion']");
         const categoriaInput = document.querySelector("select[name='categoria']");
-        const imagenInput = document.querySelector("input[name='imagen']");
+        const imagenInput = document.querySelector("input[name='imagen_url']");
 
         // Crear objeto con los datos
         const data = {
             nombre: nombreInput ? nombreInput.value : '',
             descripcion: descripcionInput ? descripcionInput.value : '',
             categoria: categoriaInput ? categoriaInput.value : '',
-            imagen_url: null
+            imagen_url: imagenInput ? imagenInput.value : null
         };
-
-        // Procesar imagen si existe
-        if (imagenInput && imagenInput.files && imagenInput.files.length > 0) {
-            try {
-                const file = imagenInput.files[0];
-                const base64Image = await convertirImagenABase64(file);
-                data.imagen_url = base64Image;
-            } catch (error) {
-                console.error('Error al procesar la imagen:', error);
-            }
-        }
 
         console.log('Datos del formulario:', data);
 
@@ -61,7 +89,7 @@ function iniciarProcesoCreacionOrganizacion() {
 
             if (response.ok && result.success) {
                 console.log('Organización creada con éxito:', result.message);
-                mensajeElement.className = 'alert alert-success';
+                mensajeElement.className = 'alert alert-success fadeIn';
                 mensajeElement.textContent = result.message;
                 
                 setTimeout(() => {
@@ -69,7 +97,7 @@ function iniciarProcesoCreacionOrganizacion() {
                 }, 1000);
             } else {
                 console.error('Error al crear la organización:', result.error);
-                mensajeElement.className = 'alert alert-danger';
+                mensajeElement.className = 'alert alert-danger fadeIn';
                 mensajeElement.textContent = result.message;
                 if (result.error) {
                     mensajeElement.textContent += ` (${result.error})`;
@@ -79,7 +107,7 @@ function iniciarProcesoCreacionOrganizacion() {
             console.error('Error:', error);
             let mensajeElement = document.getElementById("mensaje-respuesta");
             if (mensajeElement) {
-                mensajeElement.className = 'alert alert-danger';
+                mensajeElement.className = 'alert alert-danger fadeIn';
                 mensajeElement.textContent = "Hubo un error al enviar los datos.";
             }
         }

@@ -56,6 +56,8 @@ def routes(app):
     
     @app.route('/nuevoProyecto')
     def nuevoProyecto():
+        if not session.get('logged_in'):
+            return redirect(url_for('login', next=request.url))
         return render_template('pages/nuevoProyecto.html')
 
     @app.route('/organizaciones')
@@ -64,6 +66,8 @@ def routes(app):
     
     @app.route('/nuevaOrganizacion')
     def nuevaOrganizacion():
+        if not session.get('logged_in'):
+            return redirect(url_for('login', next=request.url))
         return render_template('pages/nuevaOR.html')
     
     
@@ -160,7 +164,7 @@ def routes(app):
                         data.get('descripcion'),
                         data.get('categoria'),
                         data.get('imagen_url'),
-                        1  # ID del usuario
+                        session.get('usuario_id')  # ID del usuario
                     )
                     print("Valores a insertar:", valores)  # Log para verificar valores
                     
@@ -330,16 +334,24 @@ def routes(app):
     @app.route('/api/organizaciones/borrar-todo', methods=['DELETE'])
     def borrar_todas_organizaciones():
         try:
+            if not session.get('logged_in'):
+                return jsonify({
+                    "success": False,
+                    "message": "Usuario no autenticado"
+                }), 401
+
+            usuario_id = session.get('usuario_id')
+            
             connection = app.get_db()
             cursor = connection.cursor()
             
-            # Borrar todas las organizaciones
-            cursor.execute("DELETE FROM organizaciones")
+            # Borrar solo las organizaciones del usuario actual
+            cursor.execute("DELETE FROM organizaciones WHERE usuarios_id_usuario = ?", (usuario_id,))
             connection.commit()
             
             return jsonify({
                 "success": True,
-                "message": "Todas las organizaciones han sido eliminadas"
+                "message": "Todas tus organizaciones han sido eliminadas"
             })
             
         except Exception as e:
@@ -600,4 +612,54 @@ def routes(app):
                     connection.close()
 
         return render_template('pages/nuevoProyecto.html')
+
+    @app.route('/api/proyectos/<int:proyecto_id>')
+    def obtener_proyecto(proyecto_id):
+        try:
+            connection = app.get_db()
+            cursor = connection.cursor()
+            
+            cursor.execute("""
+                SELECT 
+                    p.id_proyecto,
+                    p.titulo,
+                    p.descripcion,
+                    p.meta_financiera,
+                    p.monto_recaudado,
+                    o.nombre as organizacion_nombre
+                FROM proyectos p
+                JOIN organizaciones o ON p.organizaciones_id_organizacion = o.id_organizacion
+                WHERE p.id_proyecto = ?
+            """, (proyecto_id,))
+            
+            proyecto = cursor.fetchone()
+            
+            if proyecto:
+                return jsonify({
+                    "success": True,
+                    "proyecto": {
+                        "id": proyecto[0],
+                        "titulo": proyecto[1],
+                        "descripcion": proyecto[2],
+                        "meta_financiera": float(proyecto[3]),
+                        "monto_recaudado": float(proyecto[4]),
+                        "organizacion_nombre": proyecto[5]
+                    }
+                })
+            else:
+                return jsonify({
+                    "success": False,
+                    "message": "Proyecto no encontrado"
+                }), 404
+                
+        except Exception as e:
+            return jsonify({
+                "success": False,
+                "message": str(e)
+            }), 500
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
 
