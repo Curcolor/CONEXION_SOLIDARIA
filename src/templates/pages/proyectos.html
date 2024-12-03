@@ -36,6 +36,10 @@
     </nav>
 
     <main class="container">
+        <a href="/src/templates/pages/nuevoProyecto.html" class="btn-crear">
+            <i class="fas fa-plus"></i>
+            Crear proyecto
+        </a>
         <h2>Proyectos Activos</h2>
         <div class="filter-container">
             <label for="category-filter">Filtrar por categoría:</label>
@@ -48,31 +52,7 @@
             </select>
         </div>
         <div id="projectList" class="featured-projects">
-
-            <div class="project-card">
-                <img src="/src/static/images/helpp.jpg" alt="Proyecto de Educación">
-                <div class="project-content">
-                    <h3 class="project-title">Educación para Todos</h3>
-                    <p class="organization-name"><i class="fas fa-building"></i> Fundación Educativa</p>
-                    <p class="project-description">Ayudando a niños de bajos recursos a acceder a educación de calidad
-                    </p>
-                    <div class="project-meta">
-                        <div class="meta-item">
-                            <span>Meta: $10,000</span>
-                            <span>Recaudado: $7,500</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 75%"></div>
-                        </div>
-                        <p class="progress-text">75% completado</p>
-                    </div>
-                    <div class="project-actions">
-                        <button class="btn-donar"><i class="fas fa-hand-holding-heart"></i> Donar</button>
-                    </div>
-                </div>
-            </div>
-
-
+            <!-- Las tarjetas de proyectos se generarán aquí dinámicamente -->
         </div>
     </main>
 
