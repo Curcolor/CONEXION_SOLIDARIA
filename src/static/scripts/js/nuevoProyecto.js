@@ -43,40 +43,30 @@ function mostrarOrganizacionesEnSelect(organizaciones) {
 }
 
 // Cargar organizaciones cuando la página se cargue
-document.addEventListener('DOMContentLoaded', () => {
-    obtenerOrganizaciones()
-        .then(organizaciones => {
-            mostrarOrganizacionesEnSelect(organizaciones);
-        })
-        .catch(error => {
-            console.error('Error al cargar organizaciones:', error);
-            // Mostrar mensaje de error en el select
-            const selectOrg = document.getElementById('organizacion');
-            if (selectOrg) {
-                selectOrg.innerHTML = '<option value="">Error al cargar organizaciones</option>';
-                selectOrg.disabled = true;
-            }
-            // Mostrar mensaje de error al usuario
-            const mensajeRespuesta = document.getElementById('mensaje-respuesta');
-            if (mensajeRespuesta) {
-                mensajeRespuesta.innerHTML = `
-                    <div class="alert alert-danger">
-                        Error al cargar las organizaciones. Por favor, recargue la página o intente más tarde.
-                    </div>
-                `;
-            }
-        });
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const organizaciones = await obtenerOrganizaciones();
+        mostrarOrganizacionesEnSelect(organizaciones);
 
-    // Preview de imagen
-    const inputImagen = document.getElementById('imagen');
-    if (inputImagen) {
-        inputImagen.addEventListener('change', previsualizarImagen);
-    }
+        // Agrupar organizaciones por categoría
+        const organizacionesAgrupadas = agruparOrganizacionesPorCategoria(organizaciones);
+        console.log('Organizaciones agrupadas:', organizacionesAgrupadas);
 
-    // Manejar envío del formulario
-    const form = document.getElementById('proyectoForm');
-    if (form) {
-        form.addEventListener('submit', crearNuevoProyecto);
+    } catch (error) {
+        console.error('Error al cargar organizaciones:', error);
+        const selectOrg = document.getElementById('organizacion');
+        if (selectOrg) {
+            selectOrg.innerHTML = '<option value="">Error al cargar organizaciones</option>';
+            selectOrg.disabled = true;
+        }
+        const mensajeRespuesta = document.getElementById('mensaje-respuesta');
+        if (mensajeRespuesta) {
+            mensajeRespuesta.innerHTML = `
+                <div class="alert alert-danger">
+                    Error al cargar las organizaciones. Por favor, recargue la página o intente más tarde.
+                </div>
+            `;
+        }
     }
 });
 
