@@ -65,7 +65,7 @@ function iniciarProcesoCreacionOrganizacion() {
                 mensajeElement.textContent = result.message;
                 
                 setTimeout(() => {
-                    //window.location.href = "/src/templates/pages/html/organizaciones.html";
+                    window.location.href = "/src/templates/pages/organizaciones.html";
                 }, 2000);
             } else {
                 console.error('Error al crear la organización:', result.error);
