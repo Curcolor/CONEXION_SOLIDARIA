@@ -7,7 +7,7 @@ def routes(app):
     @app.route('/')
     @app.route('/inicio')
     def home():
-        return render_template('index.html')
+        return render_template('pages/proyectos.html')
 
     @app.route('/registrarse')
     def registro():

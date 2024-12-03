@@ -117,6 +117,7 @@ class BaseDatos:
                     INSERT INTO usuarios (nombre_completo, dni, email, telefono, fecha_nacimiento, contraseña)
                     VALUES (?, ?, ?, ?, ?, ?)
                 """, (nombre_completo, dni, email, telefono, fecha_nacimiento, contraseña))
+                conexion.commit()
                 return cursor.lastrowid
         except sqlite3.IntegrityError as e:
             error_msg = str(e)
@@ -136,27 +137,56 @@ class BaseDatos:
         try:
             with self.get_conexion() as conexion:
                 cursor = conexion.cursor()
-                cursor.execute("SELECT * FROM usuarios WHERE email = ?", (email,))
+                cursor.execute("""
+                    SELECT id_usuario, nombre_completo, email, contraseña 
+                    FROM usuarios 
+                    WHERE email = ?
+                """, (email,))
                 return cursor.fetchone()
         except sqlite3.Error as e:
-            print(f"Error al buscar usuario: {e}")
+            print(f"Error al buscar usuario por email: {e}")
             return None
 
     # Ejemplo de crear organización
-    def crear_organizacion(
-        self, nombre, descripcion, categoria, imagen_url, usuario_id
-    ):
+    def crear_organizacion(self, nombre, descripcion, categoria, imagen_url, usuario_id):
         try:
             with self.get_conexion() as conexion:
                 cursor = conexion.cursor()
-                cursor.execute(
-                    """
-                    INSERT INTO organizaciones (nombre, descripcion, categoria, imagen_url, usuarios_id_usuario)
-                    VALUES (?, ?, ?, ?, ?)
-                """,
-                    (nombre, descripcion, categoria, imagen_url, usuario_id),
+                
+                # Insertar la organización
+                query = """
+                INSERT INTO organizaciones (
+                    nombre,
+                    descripcion,
+                    categoria,
+                    imagen_url,
+                    usuarios_id_usuario
                 )
-                return cursor.lastrowid
+                VALUES (?, ?, ?, ?, ?)
+                """
+                
+                cursor.execute(query, (nombre, descripcion, categoria, imagen_url, usuario_id))
+                conexion.commit()
+                id_organizacion = cursor.lastrowid
+                
+                # Obtener la organización recién creada
+                query_select = """
+                SELECT 
+                    o.id_organizacion,
+                    o.nombre,
+                    o.descripcion,
+                    o.categoria,
+                    o.imagen_url,
+                    o.fecha_registro,
+                    u.nombre_completo as creador
+                FROM organizaciones o
+                JOIN usuarios u ON o.usuarios_id_usuario = u.id_usuario
+                WHERE o.id_organizacion = ?
+                """
+                
+                cursor.execute(query_select, (id_organizacion,))
+                return cursor.fetchone()
+                
         except sqlite3.Error as e:
             print(f"Error al crear organización: {e}")
             return None
@@ -266,4 +296,58 @@ class BaseDatos:
                 return cursor.rowcount > 0
         except sqlite3.Error as e:
             print(f"Error al actualizar imagen de solicitud: {e}")
+            return False
+
+    def obtener_organizaciones(self):
+        try:
+            with self.get_conexion() as conexion:
+                cursor = conexion.cursor()
+                cursor.execute("""
+                    SELECT 
+                        o.id_organizacion,
+                        o.nombre,
+                        o.descripcion,
+                        o.categoria,
+                        o.imagen_url,
+                        o.fecha_registro,
+                        u.nombre_completo as creador
+                    FROM organizaciones o
+                    JOIN usuarios u ON o.usuarios_id_usuario = u.id_usuario
+                """)
+                return cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"Error al obtener organizaciones: {e}")
+            return None
+
+    def borrar_organizacion(self, id_organizacion):
+        try:
+            with self.get_conexion() as conexion:
+                cursor = conexion.cursor()
+                
+                # Verificar si la organización existe
+                cursor.execute("SELECT * FROM organizaciones WHERE id_organizacion = ?", (id_organizacion,))
+                organizacion = cursor.fetchone()
+                
+                if not organizacion:
+                    return False
+                
+                # Borrar la organización
+                cursor.execute("DELETE FROM organizaciones WHERE id_organizacion = ?", (id_organizacion,))
+                conexion.commit()
+                return True
+                
+        except sqlite3.Error as e:
+            print(f"Error al borrar organización: {e}")
+            return False
+
+    def borrar_todas_organizaciones(self):
+        try:
+            with self.get_conexion() as conexion:
+                cursor = conexion.cursor()
+                cursor.execute("DELETE FROM organizaciones")
+                conexion.commit()
+                return True
+                
+        except sqlite3.Error as e:
+            print(f"Error al borrar todas las organizaciones: {e}")
             return False
